@@ -48,3 +48,40 @@ export interface TranslationResult {
   originalShape: TranslatedShape | null
   translatedShape: TranslatedShape | null
 }
+
+export interface ResearchVoicingQuery {
+  chordSymbol: string
+  tuningId: string
+  maxFret?: number
+  requirePlayable?: boolean
+  limit?: number
+}
+
+export interface ResearchVoicingMatch {
+  voicingId: string
+  chordSymbol: string
+  tuningId: string
+  relativeFrets: Array<number | 'x'>
+  minFret: number
+  maxFret: number
+  playable: boolean
+  sourceId: string
+  score: number
+}
+
+export interface ResearchTranspositionQuery {
+  fromChordSymbol: string
+  toChordSymbol?: string
+  fromVoicingId?: string
+  limit?: number
+}
+
+export interface ResearchTranspositionMatch {
+  transpositionId: string
+  fromChordSymbol: string
+  toChordSymbol: string
+  semitoneDelta: number
+  fromVoicingId: string
+  toRelativeFrets: Array<number | 'x'>
+  sourceId: string
+}
