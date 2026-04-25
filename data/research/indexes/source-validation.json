@@ -1,0 +1,84 @@
+{
+  "checks": [
+    {
+      "signatureOverlapCount": 2,
+      "sourceId": "szaza-c-major",
+      "symbolOverlap": [
+        "C"
+      ],
+      "validatorId": "tombatossals-c-major"
+    },
+    {
+      "sourceId": "szaza-c-major",
+      "status": "validated",
+      "validatorId": "tombatossals-c-major"
+    },
+    {
+      "signatureOverlapCount": 2,
+      "sourceId": "szaza-g-major",
+      "symbolOverlap": [
+        "G"
+      ],
+      "validatorId": "tombatossals-g-major"
+    },
+    {
+      "sourceId": "szaza-g-major",
+      "status": "validated",
+      "validatorId": "tombatossals-g-major"
+    },
+    {
+      "signatureOverlapCount": 2,
+      "sourceId": "szaza-d-major",
+      "symbolOverlap": [
+        "D"
+      ],
+      "validatorId": "tombatossals-d-major"
+    },
+    {
+      "sourceId": "szaza-d-major",
+      "status": "validated",
+      "validatorId": "tombatossals-d-major"
+    },
+    {
+      "signatureOverlapCount": 2,
+      "sourceId": "szaza-a-major",
+      "symbolOverlap": [
+        "A"
+      ],
+      "validatorId": "tombatossals-a-major"
+    },
+    {
+      "sourceId": "szaza-a-major",
+      "status": "validated",
+      "validatorId": "tombatossals-a-major"
+    },
+    {
+      "signatureOverlapCount": 2,
+      "sourceId": "szaza-e-major",
+      "symbolOverlap": [
+        "E"
+      ],
+      "validatorId": "tombatossals-e-major"
+    },
+    {
+      "sourceId": "szaza-e-major",
+      "status": "validated",
+      "validatorId": "tombatossals-e-major"
+    },
+    {
+      "signatureOverlapCount": 2,
+      "sourceId": "szaza-f-major",
+      "symbolOverlap": [
+        "F"
+      ],
+      "validatorId": "tombatossals-f-major"
+    },
+    {
+      "sourceId": "szaza-f-major",
+      "status": "validated",
+      "validatorId": "tombatossals-f-major"
+    }
+  ],
+  "conflicts": [],
+  "ok": true
+}

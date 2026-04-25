@@ -1,0 +1,24 @@
+{
+  "main": {
+    "name": "Guitar",
+    "strings": 6
+  },
+  "chords": {
+    "G": [
+      {
+        "key": "G",
+        "suffix": "major",
+        "positions": [
+          {
+            "frets": "320003",
+            "fingers": "210003"
+          },
+          {
+            "frets": "320033",
+            "fingers": "210034"
+          }
+        ]
+      }
+    ]
+  }
+}

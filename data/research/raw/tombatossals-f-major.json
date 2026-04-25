@@ -1,0 +1,24 @@
+{
+  "chords": {
+    "F": [
+      {
+        "key": "F",
+        "positions": [
+          {
+            "fingers": "134211",
+            "frets": "133211"
+          },
+          {
+            "fingers": "043121",
+            "frets": "x87565"
+          }
+        ],
+        "suffix": "major"
+      }
+    ]
+  },
+  "main": {
+    "name": "Guitar",
+    "strings": 6
+  }
+}

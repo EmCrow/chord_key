@@ -1,0 +1,561 @@
+{
+  "generatedAt": "2026-04-25T01:31:44.001Z",
+  "schemaVersion": 1,
+  "sources": [
+    {
+      "checksum": "c8f9560a99adc482844a15ea80a869aad74af4e4ad637466c426e3e8c972b98c",
+      "license": "MIT",
+      "name": "szaza A major chord positions",
+      "retrievedAt": "2026-04-25T01:31:44.001Z",
+      "sourceId": "szaza-a-major",
+      "sourceUrl": "https://raw.githubusercontent.com/szaza/guitar-chords-db-json/master/A/major.json"
+    },
+    {
+      "checksum": "0ad58a784395e18da144fb35a4180c231872ef8669aba5586cd8919089d1d1ee",
+      "license": "MIT",
+      "name": "szaza C major chord positions",
+      "retrievedAt": "2026-04-25T01:31:44.001Z",
+      "sourceId": "szaza-c-major",
+      "sourceUrl": "https://raw.githubusercontent.com/szaza/guitar-chords-db-json/master/C/major.json"
+    },
+    {
+      "checksum": "dfd926a8df85872411ae7f8f9692633851ae0ef2d2e01af4b130b4dc3e143042",
+      "license": "MIT",
+      "name": "szaza D major chord positions",
+      "retrievedAt": "2026-04-25T01:31:44.001Z",
+      "sourceId": "szaza-d-major",
+      "sourceUrl": "https://raw.githubusercontent.com/szaza/guitar-chords-db-json/master/D/major.json"
+    },
+    {
+      "checksum": "5174888d7d394b59bf9ef2a6f044512b33e3ac97d849f6b66d8ef55a18d89353",
+      "license": "MIT",
+      "name": "szaza E major chord positions",
+      "retrievedAt": "2026-04-25T01:31:44.001Z",
+      "sourceId": "szaza-e-major",
+      "sourceUrl": "https://raw.githubusercontent.com/szaza/guitar-chords-db-json/master/E/major.json"
+    },
+    {
+      "checksum": "72b8eff3565593ae3bfde6f73c997d5108f0fc1f3c456bb7f6b34039a15b4b2a",
+      "license": "MIT",
+      "name": "szaza F major chord positions",
+      "retrievedAt": "2026-04-25T01:31:44.001Z",
+      "sourceId": "szaza-f-major",
+      "sourceUrl": "https://raw.githubusercontent.com/szaza/guitar-chords-db-json/master/F/major.json"
+    },
+    {
+      "checksum": "b9f2338cff078b3b0132fbd620c2743dafd582cc8b8b81e92372c37ea989f639",
+      "license": "MIT",
+      "name": "szaza G major chord positions",
+      "retrievedAt": "2026-04-25T01:31:44.001Z",
+      "sourceId": "szaza-g-major",
+      "sourceUrl": "https://raw.githubusercontent.com/szaza/guitar-chords-db-json/master/G/major.json"
+    },
+    {
+      "checksum": "07a809b9a759e7c6c907855deffd944d797fe36cdf61af42075e38accbcde4bc",
+      "license": "MIT",
+      "name": "tombatossals A major chord positions",
+      "retrievedAt": "2026-04-25T01:31:44.001Z",
+      "sourceId": "tombatossals-a-major",
+      "sourceUrl": "https://raw.githubusercontent.com/tombatossals/chords-db/master/lib/guitar.json"
+    },
+    {
+      "checksum": "6b8a4018fcef4692f33b43f1233d269a6a3564f2f2873acc1bd199e0836ebec6",
+      "license": "MIT",
+      "name": "tombatossals C major chord positions",
+      "retrievedAt": "2026-04-25T01:31:44.001Z",
+      "sourceId": "tombatossals-c-major",
+      "sourceUrl": "https://raw.githubusercontent.com/tombatossals/chords-db/master/lib/guitar.json"
+    },
+    {
+      "checksum": "4d811be4316c16ca0f84f18a703f75073e03edd5464ca7a54f6db4e3ed343610",
+      "license": "MIT",
+      "name": "tombatossals D major chord positions",
+      "retrievedAt": "2026-04-25T01:31:44.001Z",
+      "sourceId": "tombatossals-d-major",
+      "sourceUrl": "https://raw.githubusercontent.com/tombatossals/chords-db/master/lib/guitar.json"
+    },
+    {
+      "checksum": "a73c67d996f5831d6a32132bff7de40fd0fd584696be38cd137b401c7cd89af0",
+      "license": "MIT",
+      "name": "tombatossals E major chord positions",
+      "retrievedAt": "2026-04-25T01:31:44.001Z",
+      "sourceId": "tombatossals-e-major",
+      "sourceUrl": "https://raw.githubusercontent.com/tombatossals/chords-db/master/lib/guitar.json"
+    },
+    {
+      "checksum": "01a736a3b3352d99d6bd635ac995fba1d329694fce0146d98e1cbe0af0d3737e",
+      "license": "MIT",
+      "name": "tombatossals F major chord positions",
+      "retrievedAt": "2026-04-25T01:31:44.001Z",
+      "sourceId": "tombatossals-f-major",
+      "sourceUrl": "https://raw.githubusercontent.com/tombatossals/chords-db/master/lib/guitar.json"
+    },
+    {
+      "checksum": "19679b41069ee2ea234117ef73664c037703e8b1a897c3fa5a2923137775e4d0",
+      "license": "MIT",
+      "name": "tombatossals G major chord positions",
+      "retrievedAt": "2026-04-25T01:31:44.001Z",
+      "sourceId": "tombatossals-g-major",
+      "sourceUrl": "https://raw.githubusercontent.com/tombatossals/chords-db/master/lib/guitar.json"
+    }
+  ],
+  "transpositions": [],
+  "voicings": [
+    {
+      "chordSymbol": "A",
+      "maxFret": 2,
+      "minFret": 0,
+      "playable": true,
+      "quality": "maj",
+      "relativeFrets": [
+        "x",
+        0,
+        2,
+        2,
+        2,
+        0
+      ],
+      "rootNote": "A",
+      "sourceId": "szaza-a-major",
+      "tuningId": "standard",
+      "voicingId": "szaza-a-major-voicing-22f38d2d9eaf"
+    },
+    {
+      "chordSymbol": "A",
+      "maxFret": 7,
+      "minFret": 5,
+      "playable": true,
+      "quality": "maj",
+      "relativeFrets": [
+        5,
+        7,
+        7,
+        6,
+        5,
+        5
+      ],
+      "rootNote": "A",
+      "sourceId": "szaza-a-major",
+      "tuningId": "standard",
+      "voicingId": "szaza-a-major-voicing-4ef7da126dec"
+    },
+    {
+      "chordSymbol": "C",
+      "maxFret": 3,
+      "minFret": 0,
+      "playable": true,
+      "quality": "maj",
+      "relativeFrets": [
+        "x",
+        3,
+        2,
+        0,
+        1,
+        0
+      ],
+      "rootNote": "C",
+      "sourceId": "szaza-c-major",
+      "tuningId": "standard",
+      "voicingId": "szaza-c-major-voicing-7ba29186068f"
+    },
+    {
+      "chordSymbol": "C",
+      "maxFret": 5,
+      "minFret": 3,
+      "playable": true,
+      "quality": "maj",
+      "relativeFrets": [
+        "x",
+        3,
+        5,
+        5,
+        5,
+        3
+      ],
+      "rootNote": "C",
+      "sourceId": "szaza-c-major",
+      "tuningId": "standard",
+      "voicingId": "szaza-c-major-voicing-d0b1bd5ea090"
+    },
+    {
+      "chordSymbol": "D",
+      "maxFret": 3,
+      "minFret": 0,
+      "playable": true,
+      "quality": "maj",
+      "relativeFrets": [
+        "x",
+        "x",
+        0,
+        2,
+        3,
+        2
+      ],
+      "rootNote": "D",
+      "sourceId": "szaza-d-major",
+      "tuningId": "standard",
+      "voicingId": "szaza-d-major-voicing-3ae1d8fc522e"
+    },
+    {
+      "chordSymbol": "D",
+      "maxFret": 7,
+      "minFret": 5,
+      "playable": true,
+      "quality": "maj",
+      "relativeFrets": [
+        "x",
+        5,
+        7,
+        7,
+        7,
+        5
+      ],
+      "rootNote": "D",
+      "sourceId": "szaza-d-major",
+      "tuningId": "standard",
+      "voicingId": "szaza-d-major-voicing-eb86a55c0267"
+    },
+    {
+      "chordSymbol": "E",
+      "maxFret": 7,
+      "minFret": 4,
+      "playable": true,
+      "quality": "maj",
+      "relativeFrets": [
+        "x",
+        7,
+        6,
+        4,
+        5,
+        4
+      ],
+      "rootNote": "E",
+      "sourceId": "szaza-e-major",
+      "tuningId": "standard",
+      "voicingId": "szaza-e-major-voicing-47cbedefb7d2"
+    },
+    {
+      "chordSymbol": "E",
+      "maxFret": 2,
+      "minFret": 0,
+      "playable": true,
+      "quality": "maj",
+      "relativeFrets": [
+        0,
+        2,
+        2,
+        1,
+        0,
+        0
+      ],
+      "rootNote": "E",
+      "sourceId": "szaza-e-major",
+      "tuningId": "standard",
+      "voicingId": "szaza-e-major-voicing-6f6814d6e3ce"
+    },
+    {
+      "chordSymbol": "F",
+      "maxFret": 3,
+      "minFret": 1,
+      "playable": true,
+      "quality": "maj",
+      "relativeFrets": [
+        1,
+        3,
+        3,
+        2,
+        1,
+        1
+      ],
+      "rootNote": "F",
+      "sourceId": "szaza-f-major",
+      "tuningId": "standard",
+      "voicingId": "szaza-f-major-voicing-0ddb4016ba65"
+    },
+    {
+      "chordSymbol": "F",
+      "maxFret": 8,
+      "minFret": 5,
+      "playable": true,
+      "quality": "maj",
+      "relativeFrets": [
+        "x",
+        8,
+        7,
+        5,
+        6,
+        5
+      ],
+      "rootNote": "F",
+      "sourceId": "szaza-f-major",
+      "tuningId": "standard",
+      "voicingId": "szaza-f-major-voicing-9bd650a808b9"
+    },
+    {
+      "chordSymbol": "G",
+      "maxFret": 3,
+      "minFret": 0,
+      "playable": true,
+      "quality": "maj",
+      "relativeFrets": [
+        3,
+        2,
+        0,
+        0,
+        3,
+        3
+      ],
+      "rootNote": "G",
+      "sourceId": "szaza-g-major",
+      "tuningId": "standard",
+      "voicingId": "szaza-g-major-voicing-ce30331a5d7f"
+    },
+    {
+      "chordSymbol": "G",
+      "maxFret": 3,
+      "minFret": 0,
+      "playable": true,
+      "quality": "maj",
+      "relativeFrets": [
+        3,
+        2,
+        0,
+        0,
+        0,
+        3
+      ],
+      "rootNote": "G",
+      "sourceId": "szaza-g-major",
+      "tuningId": "standard",
+      "voicingId": "szaza-g-major-voicing-f63f3ff5f084"
+    },
+    {
+      "chordSymbol": "A",
+      "maxFret": 2,
+      "minFret": 0,
+      "playable": true,
+      "quality": "maj",
+      "relativeFrets": [
+        "x",
+        0,
+        2,
+        2,
+        2,
+        0
+      ],
+      "rootNote": "A",
+      "sourceId": "tombatossals-a-major",
+      "tuningId": "standard",
+      "voicingId": "tombatossals-a-major-voicing-22f38d2d9eaf"
+    },
+    {
+      "chordSymbol": "A",
+      "maxFret": 7,
+      "minFret": 5,
+      "playable": true,
+      "quality": "maj",
+      "relativeFrets": [
+        5,
+        7,
+        7,
+        6,
+        5,
+        5
+      ],
+      "rootNote": "A",
+      "sourceId": "tombatossals-a-major",
+      "tuningId": "standard",
+      "voicingId": "tombatossals-a-major-voicing-4ef7da126dec"
+    },
+    {
+      "chordSymbol": "C",
+      "maxFret": 3,
+      "minFret": 0,
+      "playable": true,
+      "quality": "maj",
+      "relativeFrets": [
+        "x",
+        3,
+        2,
+        0,
+        1,
+        0
+      ],
+      "rootNote": "C",
+      "sourceId": "tombatossals-c-major",
+      "tuningId": "standard",
+      "voicingId": "tombatossals-c-major-voicing-7ba29186068f"
+    },
+    {
+      "chordSymbol": "C",
+      "maxFret": 5,
+      "minFret": 3,
+      "playable": true,
+      "quality": "maj",
+      "relativeFrets": [
+        "x",
+        3,
+        5,
+        5,
+        5,
+        3
+      ],
+      "rootNote": "C",
+      "sourceId": "tombatossals-c-major",
+      "tuningId": "standard",
+      "voicingId": "tombatossals-c-major-voicing-d0b1bd5ea090"
+    },
+    {
+      "chordSymbol": "D",
+      "maxFret": 3,
+      "minFret": 0,
+      "playable": true,
+      "quality": "maj",
+      "relativeFrets": [
+        "x",
+        "x",
+        0,
+        2,
+        3,
+        2
+      ],
+      "rootNote": "D",
+      "sourceId": "tombatossals-d-major",
+      "tuningId": "standard",
+      "voicingId": "tombatossals-d-major-voicing-3ae1d8fc522e"
+    },
+    {
+      "chordSymbol": "D",
+      "maxFret": 7,
+      "minFret": 5,
+      "playable": true,
+      "quality": "maj",
+      "relativeFrets": [
+        "x",
+        5,
+        7,
+        7,
+        7,
+        5
+      ],
+      "rootNote": "D",
+      "sourceId": "tombatossals-d-major",
+      "tuningId": "standard",
+      "voicingId": "tombatossals-d-major-voicing-eb86a55c0267"
+    },
+    {
+      "chordSymbol": "E",
+      "maxFret": 7,
+      "minFret": 4,
+      "playable": true,
+      "quality": "maj",
+      "relativeFrets": [
+        "x",
+        7,
+        6,
+        4,
+        5,
+        4
+      ],
+      "rootNote": "E",
+      "sourceId": "tombatossals-e-major",
+      "tuningId": "standard",
+      "voicingId": "tombatossals-e-major-voicing-47cbedefb7d2"
+    },
+    {
+      "chordSymbol": "E",
+      "maxFret": 2,
+      "minFret": 0,
+      "playable": true,
+      "quality": "maj",
+      "relativeFrets": [
+        0,
+        2,
+        2,
+        1,
+        0,
+        0
+      ],
+      "rootNote": "E",
+      "sourceId": "tombatossals-e-major",
+      "tuningId": "standard",
+      "voicingId": "tombatossals-e-major-voicing-6f6814d6e3ce"
+    },
+    {
+      "chordSymbol": "F",
+      "maxFret": 3,
+      "minFret": 1,
+      "playable": true,
+      "quality": "maj",
+      "relativeFrets": [
+        1,
+        3,
+        3,
+        2,
+        1,
+        1
+      ],
+      "rootNote": "F",
+      "sourceId": "tombatossals-f-major",
+      "tuningId": "standard",
+      "voicingId": "tombatossals-f-major-voicing-0ddb4016ba65"
+    },
+    {
+      "chordSymbol": "F",
+      "maxFret": 8,
+      "minFret": 5,
+      "playable": true,
+      "quality": "maj",
+      "relativeFrets": [
+        "x",
+        8,
+        7,
+        5,
+        6,
+        5
+      ],
+      "rootNote": "F",
+      "sourceId": "tombatossals-f-major",
+      "tuningId": "standard",
+      "voicingId": "tombatossals-f-major-voicing-9bd650a808b9"
+    },
+    {
+      "chordSymbol": "G",
+      "maxFret": 3,
+      "minFret": 0,
+      "playable": true,
+      "quality": "maj",
+      "relativeFrets": [
+        3,
+        2,
+        0,
+        0,
+        3,
+        3
+      ],
+      "rootNote": "G",
+      "sourceId": "tombatossals-g-major",
+      "tuningId": "standard",
+      "voicingId": "tombatossals-g-major-voicing-ce30331a5d7f"
+    },
+    {
+      "chordSymbol": "G",
+      "maxFret": 3,
+      "minFret": 0,
+      "playable": true,
+      "quality": "maj",
+      "relativeFrets": [
+        3,
+        2,
+        0,
+        0,
+        0,
+        3
+      ],
+      "rootNote": "G",
+      "sourceId": "tombatossals-g-major",
+      "tuningId": "standard",
+      "voicingId": "tombatossals-g-major-voicing-f63f3ff5f084"
+    }
+  ]
+}

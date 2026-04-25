@@ -10,8 +10,11 @@
     "build": "tsc -b && vite build",
     "typecheck": "tsc -b",
     "lint": "eslint .",
-    "gate": "npm run lint && npm run test && npm run typecheck && npm run build",
+    "gate": "npm run lint && npm run test && npm run research:validate-sources && npm run typecheck && npm run build",
     "check:ownership": "node scripts/check-agent-ownership.mjs",
+    "research:validate-sources": "node scripts/validate-research-sources.mjs",
+    "research:sync": "npm run research:validate-sources && node scripts/research-sync.mjs",
+    "research:sync:fixtures": "npm run research:validate-sources && RESEARCH_USE_FIXTURES=1 node scripts/research-sync.mjs",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest"

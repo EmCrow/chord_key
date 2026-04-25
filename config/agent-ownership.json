@@ -31,6 +31,7 @@
         "package.json",
         "scripts/**",
         "config/**",
+        "sources/**",
         ".gitignore",
         "src/App.tsx",
         "src/state/**",
@@ -159,6 +160,8 @@
       ],
       "paths": [
         "scripts",
+        "config/research-sources.json",
+        "sources/research_sources.json",
         "data/research",
         "package.json",
         ".github/workflows/ci.yml"

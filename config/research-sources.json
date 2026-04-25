@@ -1,0 +1,153 @@
+{
+  "schemaVersion": 1,
+  "validationPolicy": {
+    "requireCrossSourceValidation": true,
+    "onConflict": "require_fallback_source"
+  },
+  "sources": [
+    {
+      "sourceId": "szaza-c-major",
+      "name": "szaza C major chord positions",
+      "sourceUrl": "https://raw.githubusercontent.com/szaza/guitar-chords-db-json/master/C/major.json",
+      "license": "MIT",
+      "format": "szaza_chord_positions",
+      "sourceType": "dataset_ingest",
+      "tuningId": "standard",
+      "validationSources": ["tombatossals-c-major"],
+      "fallbackSources": ["tombatossals-c-major"]
+    },
+    {
+      "sourceId": "szaza-g-major",
+      "name": "szaza G major chord positions",
+      "sourceUrl": "https://raw.githubusercontent.com/szaza/guitar-chords-db-json/master/G/major.json",
+      "license": "MIT",
+      "format": "szaza_chord_positions",
+      "sourceType": "dataset_ingest",
+      "tuningId": "standard",
+      "validationSources": ["tombatossals-g-major"],
+      "fallbackSources": ["tombatossals-g-major"]
+    },
+    {
+      "sourceId": "szaza-d-major",
+      "name": "szaza D major chord positions",
+      "sourceUrl": "https://raw.githubusercontent.com/szaza/guitar-chords-db-json/master/D/major.json",
+      "license": "MIT",
+      "format": "szaza_chord_positions",
+      "sourceType": "dataset_ingest",
+      "tuningId": "standard",
+      "validationSources": ["tombatossals-d-major"],
+      "fallbackSources": ["tombatossals-d-major"]
+    },
+    {
+      "sourceId": "szaza-a-major",
+      "name": "szaza A major chord positions",
+      "sourceUrl": "https://raw.githubusercontent.com/szaza/guitar-chords-db-json/master/A/major.json",
+      "license": "MIT",
+      "format": "szaza_chord_positions",
+      "sourceType": "dataset_ingest",
+      "tuningId": "standard",
+      "validationSources": ["tombatossals-a-major"],
+      "fallbackSources": ["tombatossals-a-major"]
+    },
+    {
+      "sourceId": "szaza-e-major",
+      "name": "szaza E major chord positions",
+      "sourceUrl": "https://raw.githubusercontent.com/szaza/guitar-chords-db-json/master/E/major.json",
+      "license": "MIT",
+      "format": "szaza_chord_positions",
+      "sourceType": "dataset_ingest",
+      "tuningId": "standard",
+      "validationSources": ["tombatossals-e-major"],
+      "fallbackSources": ["tombatossals-e-major"]
+    },
+    {
+      "sourceId": "szaza-f-major",
+      "name": "szaza F major chord positions",
+      "sourceUrl": "https://raw.githubusercontent.com/szaza/guitar-chords-db-json/master/F/major.json",
+      "license": "MIT",
+      "format": "szaza_chord_positions",
+      "sourceType": "dataset_ingest",
+      "tuningId": "standard",
+      "validationSources": ["tombatossals-f-major"],
+      "fallbackSources": ["tombatossals-f-major"]
+    },
+    {
+      "sourceId": "tombatossals-c-major",
+      "name": "tombatossals C major chord positions",
+      "sourceUrl": "https://raw.githubusercontent.com/tombatossals/chords-db/master/lib/guitar.json",
+      "license": "MIT",
+      "format": "tombatossals_guitar_lib",
+      "sourceType": "dataset_validator",
+      "tuningId": "standard",
+      "filter": {
+        "key": "C",
+        "suffix": "major"
+      }
+    },
+    {
+      "sourceId": "tombatossals-g-major",
+      "name": "tombatossals G major chord positions",
+      "sourceUrl": "https://raw.githubusercontent.com/tombatossals/chords-db/master/lib/guitar.json",
+      "license": "MIT",
+      "format": "tombatossals_guitar_lib",
+      "sourceType": "dataset_validator",
+      "tuningId": "standard",
+      "filter": {
+        "key": "G",
+        "suffix": "major"
+      }
+    },
+    {
+      "sourceId": "tombatossals-d-major",
+      "name": "tombatossals D major chord positions",
+      "sourceUrl": "https://raw.githubusercontent.com/tombatossals/chords-db/master/lib/guitar.json",
+      "license": "MIT",
+      "format": "tombatossals_guitar_lib",
+      "sourceType": "dataset_validator",
+      "tuningId": "standard",
+      "filter": {
+        "key": "D",
+        "suffix": "major"
+      }
+    },
+    {
+      "sourceId": "tombatossals-a-major",
+      "name": "tombatossals A major chord positions",
+      "sourceUrl": "https://raw.githubusercontent.com/tombatossals/chords-db/master/lib/guitar.json",
+      "license": "MIT",
+      "format": "tombatossals_guitar_lib",
+      "sourceType": "dataset_validator",
+      "tuningId": "standard",
+      "filter": {
+        "key": "A",
+        "suffix": "major"
+      }
+    },
+    {
+      "sourceId": "tombatossals-e-major",
+      "name": "tombatossals E major chord positions",
+      "sourceUrl": "https://raw.githubusercontent.com/tombatossals/chords-db/master/lib/guitar.json",
+      "license": "MIT",
+      "format": "tombatossals_guitar_lib",
+      "sourceType": "dataset_validator",
+      "tuningId": "standard",
+      "filter": {
+        "key": "E",
+        "suffix": "major"
+      }
+    },
+    {
+      "sourceId": "tombatossals-f-major",
+      "name": "tombatossals F major chord positions",
+      "sourceUrl": "https://raw.githubusercontent.com/tombatossals/chords-db/master/lib/guitar.json",
+      "license": "MIT",
+      "format": "tombatossals_guitar_lib",
+      "sourceType": "dataset_validator",
+      "tuningId": "standard",
+      "filter": {
+        "key": "F",
+        "suffix": "major"
+      }
+    }
+  ]
+}
