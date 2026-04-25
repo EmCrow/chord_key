@@ -21,4 +21,24 @@ describe('App integration', () => {
     expect(screen.getByText(/with capo at fret 2/i)).toBeInTheDocument()
     expect(screen.getByText(/capo at 2/i)).toBeInTheDocument()
   })
+
+  it('switches to minor harmony mode when selecting a minor key row', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    const nashvillePanel = screen.getByRole('region', { name: 'Nashville number system' })
+    const amButtons = within(nashvillePanel).getAllByRole('button', { name: 'Am' })
+    const amKeyButton = amButtons.find((button) => button.classList.contains('key-chip'))
+    if (!amKeyButton) {
+      throw new Error('Expected to find Am key chip in Nashville table.')
+    }
+
+    await user.click(amKeyButton)
+
+    expect(amKeyButton).toHaveClass('active')
+    expect(within(nashvillePanel).getByRole('columnheader', { name: 'i' })).toBeInTheDocument()
+
+    const circlePanel = screen.getByRole('region', { name: 'Circle of fifths' })
+    expect(within(circlePanel).getByText(/^Am$/, { selector: 'strong' })).toBeInTheDocument()
+  })
 })

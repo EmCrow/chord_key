@@ -127,6 +127,8 @@
       "paths": [
         "src/App.tsx",
         "src/state/defaults.ts",
+        "src/state/useWorkbenchState.ts",
+        "src/state/useWorkbenchDerivedData.ts",
         "src/domain/music/harmony.ts",
         "src/domain/fretboard/map.ts",
         "src/domain/translator/translate.ts",
