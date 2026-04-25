@@ -26,3 +26,4 @@ coverage
 LOCAL_DEV_CHANGELOG.md
 AGENTS.md
 agents/*.md
+plan.md
