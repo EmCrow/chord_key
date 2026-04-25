@@ -11,6 +11,7 @@
     "typecheck": "tsc -b",
     "lint": "eslint .",
     "gate": "npm run lint && npm run test && npm run typecheck && npm run build",
+    "check:ownership": "node scripts/check-agent-ownership.mjs",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest"

@@ -1,0 +1,218 @@
+{
+  "version": 1,
+  "global_rules": [
+    {
+      "id": "domain_math_separation",
+      "rule": "Keep all music math in src/domain/* and keep React components presentation-focused."
+    },
+    {
+      "id": "domain_behavior_tests",
+      "rule": "Add or update tests for any domain behavior change."
+    },
+    {
+      "id": "fretboard_range_lock",
+      "rule": "Preserve the fixed nut-to-fret-15 visual range."
+    },
+    {
+      "id": "no_backend_v1",
+      "rule": "Do not introduce backend dependencies for v1."
+    },
+    {
+      "id": "legibility",
+      "rule": "Use readable color contrast and keep fretboard note text legible."
+    }
+  ],
+  "agents": {
+    "devops_quality": {
+      "owned_paths": [
+        "README.md",
+        "docs/**",
+        ".github/workflows/**",
+        "package.json",
+        "scripts/**",
+        "config/**",
+        ".gitignore",
+        "src/App.tsx",
+        "src/state/**",
+        "data/research/**",
+        "Containerfile"
+      ],
+      "acceptance_checks": [
+        "Fresh clone can run with documented commands.",
+        "CI executes project quality checks.",
+        "Local-only files remain out of tracked history."
+      ]
+    },
+    "music_engine": {
+      "owned_paths": [
+        "src/domain/music/**",
+        "src/domain/research/**",
+        "src/domain/types.ts"
+      ],
+      "acceptance_checks": [
+        "Correct chord quality and progression parsing behavior.",
+        "Research-domain transformations are deterministic."
+      ]
+    },
+    "fretboard_domain": {
+      "owned_paths": [
+        "src/domain/fretboard/**"
+      ],
+      "acceptance_checks": [
+        "Fretboard note generation and maps are correct.",
+        "Fixed fret range behavior is preserved."
+      ]
+    },
+    "fretboard_ui": {
+      "owned_paths": [
+        "src/components/Fretboard.tsx",
+        "src/index.css"
+      ],
+      "acceptance_checks": [
+        "Fretboard visual legibility and contrast remain acceptable.",
+        "Capo and root-note visual behavior stays synchronized."
+      ]
+    },
+    "tuning_translator": {
+      "owned_paths": [
+        "src/domain/translator/**",
+        "src/components/TuningTranslator.tsx"
+      ],
+      "acceptance_checks": [
+        "Same-tuning plus capo translation remains valid.",
+        "Relative plus capo equals absolute fret behavior."
+      ]
+    }
+  },
+  "stage_ownership": {
+    "stage-01": {
+      "title": "Git bootstrap and baseline lock",
+      "primary": "devops_quality",
+      "support": [],
+      "paths": [
+        ".gitignore",
+        ".github/workflows/ci.yml",
+        "package.json",
+        "README.md"
+      ]
+    },
+    "stage-02": {
+      "title": "One-command quality gate",
+      "primary": "devops_quality",
+      "support": [],
+      "paths": [
+        ".github/workflows/ci.yml",
+        "package.json"
+      ]
+    },
+    "stage-03": {
+      "title": "AGENTS contract alignment",
+      "primary": "devops_quality",
+      "support": [],
+      "paths": [
+        "config/agent-ownership.json",
+        "scripts/check-agent-ownership.mjs",
+        "package.json"
+      ]
+    },
+    "stage-04": {
+      "title": "App orchestration refactor",
+      "primary": "devops_quality",
+      "support": [
+        "music_engine",
+        "fretboard_domain",
+        "fretboard_ui",
+        "tuning_translator"
+      ],
+      "paths": [
+        "src/App.tsx",
+        "src/state/defaults.ts",
+        "src/domain/music/harmony.ts",
+        "src/domain/fretboard/map.ts",
+        "src/domain/translator/translate.ts",
+        "src/components/Fretboard.tsx",
+        "src/components/TuningTranslator.tsx",
+        "src/index.css"
+      ]
+    },
+    "stage-05": {
+      "title": "Local research schema",
+      "primary": "music_engine",
+      "support": [
+        "tuning_translator",
+        "fretboard_domain"
+      ],
+      "paths": [
+        "src/domain/research",
+        "src/domain/types.ts",
+        "src/domain/music"
+      ]
+    },
+    "stage-06": {
+      "title": "Internet ingestion pipeline",
+      "primary": "devops_quality",
+      "support": [
+        "music_engine",
+        "tuning_translator"
+      ],
+      "paths": [
+        "scripts",
+        "data/research",
+        "package.json",
+        ".github/workflows/ci.yml"
+      ]
+    },
+    "stage-07": {
+      "title": "Offline query engine",
+      "primary": "tuning_translator",
+      "support": [
+        "music_engine",
+        "fretboard_domain"
+      ],
+      "paths": [
+        "src/domain/research",
+        "src/domain/translator",
+        "src/domain/types.ts"
+      ]
+    },
+    "stage-08": {
+      "title": "UI integration of research-backed output",
+      "primary": "fretboard_ui",
+      "support": [
+        "tuning_translator",
+        "fretboard_domain",
+        "music_engine"
+      ],
+      "paths": [
+        "src/components/Fretboard.tsx",
+        "src/components/TuningTranslator.tsx",
+        "src/domain/translator",
+        "src/domain/fretboard",
+        "src/index.css"
+      ]
+    },
+    "stage-09": {
+      "title": "Podman containerization",
+      "primary": "devops_quality",
+      "support": [],
+      "paths": [
+        "Containerfile",
+        "package.json",
+        "scripts",
+        ".github/workflows/ci.yml",
+        "README.md"
+      ]
+    },
+    "stage-10": {
+      "title": "CI and branch/merge governance",
+      "primary": "devops_quality",
+      "support": [],
+      "paths": [
+        ".github/workflows/ci.yml",
+        "package.json",
+        "scripts",
+        "README.md"
+      ]
+    }
+  }
+}
