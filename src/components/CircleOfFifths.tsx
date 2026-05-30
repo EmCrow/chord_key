@@ -21,14 +21,14 @@ export function CircleOfFifths({ keyNote, harmonyMode, onKeyChange }: CircleOfFi
   const preferFlats = prefersFlatsForKey(keyNote)
   const scaleMode = harmonyMode === 'major' ? 'major' : 'natural_minor'
   const scaleNotes = getScalePitchClasses(keyNote, scaleMode).map((pc) => pitchClassToNote(pc, preferFlats))
-  const diatonicChords = getNashvilleChords(keyNote, harmonyMode).map((chord) => chord.chordName)
+  const diatonicChords = getNashvilleChords(keyNote, harmonyMode)
   const relativeMinor = getRelativeMinorForKey(keyNote)
 
   return (
     <section className="panel circle" aria-label="Circle of fifths">
       <header>
         <h2>Circle of Fifths</h2>
-        <p>Major and relative minor are shown on each node, plus the active key note set below.</p>
+        <p>Outer ring selects the major key; inner ring shows every active-key degree in one section.</p>
       </header>
 
       <div className="circle-wrap">
@@ -51,6 +51,25 @@ export function CircleOfFifths({ keyNote, harmonyMode, onKeyChange }: CircleOfFi
             </button>
           )
         })}
+        <div className="circle-degree-wheel" aria-label="Active key degrees">
+          {diatonicChords.map((chord, index) => {
+            const angle = (index / diatonicChords.length) * Math.PI * 2 - Math.PI / 2
+            const radius = 78
+            const x = 102 + Math.cos(angle) * radius
+            const y = 102 + Math.sin(angle) * radius
+
+            return (
+              <span
+                className="circle-degree-node"
+                key={chord.degree}
+                style={{ left: `${x}px`, top: `${y}px` }}
+              >
+                <span>{chord.roman}</span>
+                <small>{chord.chordName}</small>
+              </span>
+            )
+          })}
+        </div>
         <div className="circle-center">
           <span>Active Key</span>
           <strong>{harmonyMode === 'major' ? keyNote : `${keyNote}m`}</strong>
@@ -63,7 +82,7 @@ export function CircleOfFifths({ keyNote, harmonyMode, onKeyChange }: CircleOfFi
           <strong>Notes:</strong> {scaleNotes.join(' - ')}
         </p>
         <p>
-          <strong>Diatonic Chords:</strong> {diatonicChords.join(' - ')}
+          <strong>Diatonic Chords:</strong> {diatonicChords.map((chord) => chord.chordName).join(' - ')}
         </p>
       </div>
     </section>

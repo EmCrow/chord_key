@@ -1,5 +1,7 @@
-import type { FretPosition, TuningDef } from '../domain/types'
+import { useMemo } from 'react'
+import type { FretPosition, ResearchSuggestion, TuningDef } from '../domain/types'
 import { normalizePitchClass, parseNoteName } from '../domain/music/notes'
+import { formatShape } from '../domain/translator/translate'
 
 interface FretboardProps {
   positions: FretPosition[]
@@ -8,6 +10,7 @@ interface FretboardProps {
   scaleName: string
   cagedShape: string
   capoFret: number
+  activeResearchSuggestion: ResearchSuggestion | null
   maxFret?: number
   showNoteNames: boolean
   showIntervals: boolean
@@ -27,16 +30,20 @@ export function Fretboard({
   scaleName,
   cagedShape,
   capoFret,
+  activeResearchSuggestion,
   maxFret = 15,
   showNoteNames,
   showIntervals,
 }: FretboardProps) {
-  const byStringAndFret = new Map<string, FretPosition>()
   const keyPitchClass = parseNoteName(keyNote)
-
-  positions.forEach((position) => {
-    byStringAndFret.set(`${position.stringIndex}-${position.fret}`, position)
-  })
+  const byStringAndFret = useMemo(() => {
+    const nextMap = new Map<string, FretPosition>()
+    positions.forEach((position) => {
+      nextMap.set(`${position.stringIndex}-${position.fret}`, position)
+    })
+    return nextMap
+  }, [positions])
+  const displayStringIndexes = useMemo(() => tuning.strings.map((_, index) => index).reverse(), [tuning.strings])
 
   return (
     <section className="panel fretboard" aria-label="15 fret fretboard">
@@ -45,6 +52,20 @@ export function Fretboard({
         <p>
           {scaleName} in {keyNote} with {cagedShape}-shape overlay on {tuning.label}
           {capoFret > 0 ? ` (capo at ${capoFret})` : ''}
+        </p>
+        <p className="research-inline">
+          {activeResearchSuggestion ? (
+            <>
+              Research voicing: {activeResearchSuggestion.chordSymbol} {formatShape(activeResearchSuggestion.relativeFrets)}.
+              Source: {activeResearchSuggestion.sourceName}
+              {activeResearchSuggestion.fallbackTuningId
+                ? ` (fallback tuning ${activeResearchSuggestion.fallbackTuningId})`
+                : ''}
+              .
+            </>
+          ) : (
+            `Research voicing: no verified local shape for current active chord on ${tuning.id}.`
+          )}
         </p>
       </header>
 
@@ -61,47 +82,51 @@ export function Fretboard({
             </tr>
           </thead>
           <tbody>
-            {tuning.strings.map((stringNote, stringIndex) => (
-              <tr key={stringNote + stringIndex}>
-                <th>{stringNote}</th>
-                {Array.from({ length: maxFret + 1 }, (_, fret) => {
-                  const position = byStringAndFret.get(`${stringIndex}-${fret}`)
-                  if (!position) {
-                    return <td key={fret} />
-                  }
+            {displayStringIndexes.map((stringIndex) => {
+              const stringNote = tuning.strings[stringIndex]
 
-                  const noteClasses = [
-                    'note-dot',
-                    position.isScaleTone ? 'scale' : 'off-scale',
-                    position.isInCagedShape ? 'caged' : '',
-                    position.isRoot && position.isScaleTone ? 'root' : '',
-                    position.isChordTone && position.isScaleTone ? 'chord' : '',
-                  ]
-                    .filter(Boolean)
-                    .join(' ')
+              return (
+                <tr key={stringNote + stringIndex}>
+                  <th scope="row">{stringNote}</th>
+                  {Array.from({ length: maxFret + 1 }, (_, fret) => {
+                    const position = byStringAndFret.get(`${stringIndex}-${fret}`)
+                    if (!position) {
+                      return <td key={fret} />
+                    }
 
-                  const label = showIntervals
-                    ? getIntervalLabel(keyPitchClass, position.pitchClass)
-                    : showNoteNames
-                      ? position.noteName
-                      : ''
+                    const noteClasses = [
+                      'note-dot',
+                      position.isScaleTone ? 'scale' : 'off-scale',
+                      position.isInCagedShape ? 'caged' : '',
+                      position.isRoot && position.isScaleTone ? 'root' : '',
+                      position.isChordTone && position.isScaleTone ? 'chord' : '',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')
 
-                  const dimmed = !position.isScaleTone || (capoFret > 0 && fret < capoFret)
-                  const fretClasses = [
-                    capoFret > 0 && fret === capoFret ? 'capo-col' : '',
-                    position.isInCagedShape ? 'scale-fret' : '',
-                  ]
-                    .filter(Boolean)
-                    .join(' ')
+                    const label = showIntervals
+                      ? getIntervalLabel(keyPitchClass, position.pitchClass)
+                      : showNoteNames
+                        ? position.noteName
+                        : ''
 
-                  return (
-                    <td key={fret} className={fretClasses}>
-                      <span className={`${noteClasses}${dimmed ? ' muted' : ''}`}>{label}</span>
-                    </td>
-                  )
-                })}
-              </tr>
-            ))}
+                    const dimmed = !position.isScaleTone || (capoFret > 0 && fret < capoFret)
+                    const fretClasses = [
+                      capoFret > 0 && fret === capoFret ? 'capo-col' : '',
+                      position.isInCagedShape ? 'scale-fret' : '',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')
+
+                    return (
+                      <td key={fret} className={fretClasses}>
+                        <span className={`${noteClasses}${dimmed ? ' muted' : ''}`}>{label}</span>
+                      </td>
+                    )
+                  })}
+                </tr>
+              )
+            })}
           </tbody>
         </table>
       </div>

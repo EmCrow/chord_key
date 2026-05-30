@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { getFretboardMap } from '../domain/fretboard/map'
 import { getTuningById } from '../domain/fretboard/tunings'
 import { getNashvilleChords } from '../domain/music/harmony'
+import { getResearchSuggestionForChord, getResearchSuggestionsForChordSequence } from '../domain/research/suggestions'
 import { getScaleById, getScalePitchClasses, type ScaleId } from '../domain/music/scales'
 import { translateProgressionShapes } from '../domain/translator/translate'
 import type { CagedShape, HarmonyMode } from '../domain/types'
@@ -69,11 +70,37 @@ export function useWorkbenchDerivedData({
     [progressionInput, keyNote, originalTuning, targetTuning, tuningTargetCapo],
   )
 
+  const translationResearchSuggestions = useMemo(
+    () =>
+      getResearchSuggestionsForChordSequence({
+        chordSymbols: translationResults.map((result) => result.translatedChordName),
+        tuningId: targetTuning.id,
+        capoFret: tuningTargetCapo,
+        maxFret: FIXED_MAX_FRET,
+      }),
+    [translationResults, targetTuning.id, tuningTargetCapo],
+  )
+
+  const activeChordResearchSuggestion = useMemo(() => {
+    if (!activeChord) {
+      return null
+    }
+
+    return getResearchSuggestionForChord({
+      chordSymbol: activeChord.chordName,
+      tuningId: targetTuning.id,
+      capoFret: tuningTargetCapo,
+      maxFret: FIXED_MAX_FRET,
+    })
+  }, [activeChord, targetTuning.id, tuningTargetCapo])
+
   return {
     nashvilleChords,
     scaleDef,
     targetTuning,
     fretboardMap,
     translationResults,
+    translationResearchSuggestions,
+    activeChordResearchSuggestion,
   }
 }

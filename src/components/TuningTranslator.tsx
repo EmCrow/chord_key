@@ -1,4 +1,4 @@
-import type { TranslationResult } from '../domain/types'
+import type { ResearchSuggestion, TranslationResult } from '../domain/types'
 import { formatShape } from '../domain/translator/translate'
 import { ChordShapeChart } from './ChordShapeChart'
 
@@ -7,6 +7,7 @@ interface TuningTranslatorProps {
   onProgressionChange: (nextValue: string) => void
   targetCapo: number
   translationResults: TranslationResult[]
+  researchSuggestions: Array<ResearchSuggestion | null>
 }
 
 export function TuningTranslator({
@@ -14,6 +15,7 @@ export function TuningTranslator({
   onProgressionChange,
   targetCapo,
   translationResults,
+  researchSuggestions,
 }: TuningTranslatorProps) {
   return (
     <section className="panel translator" aria-label="Tuning translator">
@@ -43,23 +45,43 @@ export function TuningTranslator({
                   <th scope="col">Chord</th>
                   <th scope="col">Original Chord Shape</th>
                   <th scope="col">Translated Chord Shape</th>
+                  <th scope="col">Research-backed Shape</th>
                 </tr>
               </thead>
               <tbody>
                 {translationResults.length === 0 ? (
                   <tr>
-                    <td colSpan={3} className="empty-row">
+                    <td colSpan={4} className="empty-row">
                       No valid letter chords found. Use tokens like C, G, Am, F, Dm7, or Bdim.
                     </td>
                   </tr>
                 ) : (
-                  translationResults.map((result, index) => (
-                    <tr key={`${result.originalChordName}-${index}`}>
-                      <td>{result.originalChordName}</td>
-                      <td>{result.originalShape ? formatShape(result.originalShape.relativeFrets) : 'n/a'}</td>
-                      <td>{result.translatedShape ? formatShape(result.translatedShape.relativeFrets) : 'unplayable'}</td>
-                    </tr>
-                  ))
+                  translationResults.map((result, index) => {
+                    const suggestion = researchSuggestions[index]
+
+                    return (
+                      <tr key={`${result.originalChordName}-${index}`}>
+                        <td>{result.originalChordName}</td>
+                        <td>{result.originalShape ? formatShape(result.originalShape.relativeFrets) : 'n/a'}</td>
+                        <td>{result.translatedShape ? formatShape(result.translatedShape.relativeFrets) : 'unplayable'}</td>
+                        <td className="research-cell">
+                          {suggestion ? (
+                            <>
+                              <span className="research-shape">{formatShape(suggestion.relativeFrets)}</span>
+                              <small className="research-source">
+                                Source: {suggestion.sourceName}
+                                {suggestion.fallbackTuningId
+                                  ? ` (fallback tuning ${suggestion.fallbackTuningId})`
+                                  : ''}
+                              </small>
+                            </>
+                          ) : (
+                            <span className="research-missing">No verified offline shape</span>
+                          )}
+                        </td>
+                      </tr>
+                    )
+                  })
                 )}
               </tbody>
             </table>

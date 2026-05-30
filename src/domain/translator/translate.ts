@@ -1,6 +1,6 @@
 import type { TranslationOptions, TranslationResult, TranslatedShape, TuningDef } from '../types'
 import { tuningToMidi } from '../fretboard/tunings'
-import { getChordIntervals } from '../music/harmony'
+import { getChordIntervals, type ChordQuality, type ChordSeventh } from '../music/harmony'
 import { midiToNoteName, normalizePitchClass, parseNoteName, pitchClassToNote, prefersFlatsForKey } from '../music/notes'
 
 interface TranslateInput extends TranslationOptions {
@@ -17,16 +17,41 @@ interface ShapeCandidate {
   score: number
 }
 
-type ChordQuality = 'maj' | 'min' | 'dim'
-type ChordSeventh = 'maj7' | 'min7' | 'dom7' | 'dim7'
-
 interface ParsedLetterChord {
   raw: string
   rootPitchClass: number
+  bassPitchClass?: number
   quality: ChordQuality
   seventh?: ChordSeventh
   symbol: string
   chordName: string
+}
+
+const CHORD_TOKEN_PATTERN =
+  /^([A-Ga-g])([#b]?)(maj7|M7|min7|m7b5|m7|dim7|o7|°7|ø7|7sus4|7sus|sus2|sus4|sus|aug|\+|5|dim|o|°|min|minor|maj|major|m|7)?(?:\/([A-Ga-g])([#b]?))?$/
+
+const SHAPE_CACHE_LIMIT = 400
+const shapeCache = new Map<string, TranslatedShape[]>()
+const STANDARD_TUNING_MIDI = [40, 45, 50, 55, 59, 64]
+const STANDARD_OPEN_SHAPES: Record<string, ShapeFret[]> = {
+  C: ['x', 3, 2, 0, 1, 0],
+  Cm: ['x', 3, 5, 5, 4, 3],
+  C7: ['x', 3, 2, 3, 1, 0],
+  Cmaj7: ['x', 3, 2, 0, 0, 0],
+  D: ['x', 'x', 0, 2, 3, 2],
+  Dm: ['x', 'x', 0, 2, 3, 1],
+  D7: ['x', 'x', 0, 2, 1, 2],
+  E: [0, 2, 2, 1, 0, 0],
+  Em: [0, 2, 2, 0, 0, 0],
+  E7: [0, 2, 0, 1, 0, 0],
+  F: [1, 3, 3, 2, 1, 1],
+  Fmaj7: ['x', 'x', 3, 2, 1, 0],
+  G: [3, 2, 0, 0, 0, 3],
+  G7: [3, 2, 0, 0, 0, 1],
+  A: ['x', 0, 2, 2, 2, 0],
+  Am: ['x', 0, 2, 2, 1, 0],
+  A7: ['x', 0, 2, 0, 2, 0],
+  B7: ['x', 2, 1, 2, 0, 2],
 }
 
 export function translateProgressionShapes({
@@ -49,11 +74,16 @@ export function translateProgressionShapes({
   return parsedChords.map((chord) => {
     const intervals = getChordIntervals(chord.quality, chord.seventh)
     const chordToneSet = new Set(intervals.map((interval) => normalizePitchClass(chord.rootPitchClass + interval)))
+    if (chord.bassPitchClass !== undefined) {
+      chordToneSet.add(chord.bassPitchClass)
+    }
 
     const originalShapes = solveChordShapes({
       tuningMidi: fromTuningMidi,
       chordTones: chordToneSet,
       rootPitchClass: chord.rootPitchClass,
+      bassPitchClass: chord.bassPitchClass,
+      chordName: chord.chordName,
       capoFret: 0,
       maxFret,
       preferFlats,
@@ -63,6 +93,8 @@ export function translateProgressionShapes({
       tuningMidi: toTuningMidi,
       chordTones: chordToneSet,
       rootPitchClass: chord.rootPitchClass,
+      bassPitchClass: chord.bassPitchClass,
+      chordName: chord.chordName,
       capoFret,
       maxFret,
       preferFlats,
@@ -86,21 +118,26 @@ export function parseLetterChordProgression(progression: string, preferFlats: bo
   const parsed: ParsedLetterChord[] = []
 
   for (const token of tokens) {
-    const match = token.match(/^([A-Ga-g])([#b]?)(maj7|m7|dim7|dim|m|7)?$/)
+    const match = token.match(CHORD_TOKEN_PATTERN)
     if (!match) {
       continue
     }
 
-    const root = `${match[1].toUpperCase()}${match[2] ?? ''}`
-    const suffix = (match[3] ?? '').toLowerCase()
+    const root = formatParsedNoteName(match[1], match[2])
+    const suffix = match[3] ?? ''
     const rootPitchClass = parseNoteName(root)
+    const bassNote = match[4] ? formatParsedNoteName(match[4], match[5]) : undefined
+    const bassPitchClass = bassNote ? parseNoteName(bassNote) : undefined
 
     const descriptor = getChordDescriptor(suffix)
-    const chordName = `${pitchClassToNote(rootPitchClass, preferFlats)}${descriptor.symbol}`
+    const chordName = `${pitchClassToNote(rootPitchClass, preferFlats)}${descriptor.symbol}${
+      bassPitchClass === undefined ? '' : `/${pitchClassToNote(bassPitchClass, preferFlats)}`
+    }`
 
     parsed.push({
       raw: token,
       rootPitchClass,
+      bassPitchClass,
       quality: descriptor.quality,
       seventh: descriptor.seventh,
       symbol: descriptor.symbol,
@@ -111,32 +148,66 @@ export function parseLetterChordProgression(progression: string, preferFlats: bo
   return parsed
 }
 
+function formatParsedNoteName(letter: string, accidental = ''): string {
+  return `${letter.toUpperCase()}${accidental}`
+}
+
 function getChordDescriptor(suffix: string): {
   quality: ChordQuality
   seventh?: ChordSeventh
   symbol: string
 } {
-  if (suffix === 'm') {
+  const normalizedSuffix = suffix.toLowerCase()
+
+  if (normalizedSuffix === 'm' || normalizedSuffix === 'min' || normalizedSuffix === 'minor') {
     return { quality: 'min', symbol: 'm' }
   }
 
-  if (suffix === 'dim') {
+  if (normalizedSuffix === 'maj' || normalizedSuffix === 'major') {
+    return { quality: 'maj', symbol: '' }
+  }
+
+  if (normalizedSuffix === 'dim' || normalizedSuffix === 'o' || normalizedSuffix === '°') {
     return { quality: 'dim', symbol: 'dim' }
   }
 
-  if (suffix === 'maj7') {
+  if (normalizedSuffix === 'aug' || normalizedSuffix === '+') {
+    return { quality: 'aug', symbol: 'aug' }
+  }
+
+  if (normalizedSuffix === 'sus' || normalizedSuffix === 'sus4') {
+    return { quality: 'sus4', symbol: 'sus4' }
+  }
+
+  if (normalizedSuffix === 'sus2') {
+    return { quality: 'sus2', symbol: 'sus2' }
+  }
+
+  if (normalizedSuffix === '5') {
+    return { quality: 'power', symbol: '5' }
+  }
+
+  if (normalizedSuffix === 'maj7' || suffix === 'M7') {
     return { quality: 'maj', seventh: 'maj7', symbol: 'maj7' }
   }
 
-  if (suffix === 'm7') {
+  if (normalizedSuffix === 'm7' || normalizedSuffix === 'min7') {
     return { quality: 'min', seventh: 'min7', symbol: 'm7' }
   }
 
-  if (suffix === 'dim7') {
+  if (normalizedSuffix === 'm7b5' || normalizedSuffix === 'ø7') {
+    return { quality: 'dim', seventh: 'min7', symbol: 'm7b5' }
+  }
+
+  if (normalizedSuffix === 'dim7' || normalizedSuffix === 'o7' || normalizedSuffix === '°7') {
     return { quality: 'dim', seventh: 'dim7', symbol: 'dim7' }
   }
 
-  if (suffix === '7') {
+  if (normalizedSuffix === '7sus' || normalizedSuffix === '7sus4') {
+    return { quality: 'sus4', seventh: 'dom7', symbol: '7sus4' }
+  }
+
+  if (normalizedSuffix === '7') {
     return { quality: 'maj', seventh: 'dom7', symbol: '7' }
   }
 
@@ -147,6 +218,8 @@ interface SolveShapesInput {
   tuningMidi: number[]
   chordTones: Set<number>
   rootPitchClass: number
+  bassPitchClass?: number
+  chordName: string
   capoFret: number
   maxFret: number
   preferFlats: boolean
@@ -156,10 +229,32 @@ function solveChordShapes({
   tuningMidi,
   chordTones,
   rootPitchClass,
+  bassPitchClass,
+  chordName,
   capoFret,
   maxFret,
   preferFlats,
 }: SolveShapesInput): TranslatedShape[] {
+  const preferredOpenShape = getStandardOpenShape({ tuningMidi, chordName, capoFret, maxFret, preferFlats })
+  if (preferredOpenShape) {
+    return [preferredOpenShape]
+  }
+
+  const cacheKey = getShapeCacheKey({
+    tuningMidi,
+    chordTones,
+    rootPitchClass,
+    bassPitchClass,
+    chordName,
+    capoFret,
+    maxFret,
+    preferFlats,
+  })
+  const cached = shapeCache.get(cacheKey)
+  if (cached) {
+    return cached.map(cloneTranslatedShape)
+  }
+
   const maxRelativeFret = Math.max(0, maxFret - capoFret)
   const candidates: ShapeCandidate[] = []
 
@@ -186,7 +281,7 @@ function solveChordShapes({
       return frets[0] ?? 'x'
     })
 
-    const scored = evaluateShape(shape, tuningMidi, chordTones, rootPitchClass, capoFret)
+    const scored = evaluateShape(shape, tuningMidi, chordTones, rootPitchClass, bassPitchClass, capoFret)
     if (scored) {
       candidates.push(scored)
     }
@@ -195,27 +290,132 @@ function solveChordShapes({
   const deduped = dedupeCandidates(candidates)
   deduped.sort((a, b) => a.score - b.score)
 
-  return deduped.slice(0, 3).map((candidate) => {
-    const relativeFrets = candidate.frets
-    const absoluteFrets = relativeFrets.map((fret) => (fret === 'x' ? 'x' : fret + capoFret))
-    const notes = relativeFrets
-      .map((fret, stringIndex) => {
-        if (fret === 'x') {
-          return null
-        }
+  const solved = deduped
+    .slice(0, 3)
+    .map((candidate) => buildTranslatedShape(candidate.frets, tuningMidi, capoFret, maxFret, preferFlats))
 
-        const midi = tuningMidi[stringIndex] + fret + capoFret
-        return midiToNoteName(midi, preferFlats)
-      })
-      .filter((entry): entry is string => Boolean(entry))
+  setShapeCache(cacheKey, solved)
+  return solved.map(cloneTranslatedShape)
+}
 
-    return {
-      relativeFrets,
-      absoluteFrets,
-      playable: isPlayable(relativeFrets, maxFret, capoFret),
-      notes,
+function getStandardOpenShape({
+  tuningMidi,
+  chordName,
+  capoFret,
+  maxFret,
+  preferFlats,
+}: {
+  tuningMidi: number[]
+  chordName: string
+  capoFret: number
+  maxFret: number
+  preferFlats: boolean
+}): TranslatedShape | null {
+  if (!isStandardTuning(tuningMidi) || chordName.includes('/')) {
+    return null
+  }
+
+  const openShapeName = getOpenShapeNameForCapo(chordName, capoFret)
+  const relativeFrets = openShapeName ? STANDARD_OPEN_SHAPES[openShapeName] : undefined
+  if (!relativeFrets || !isPlayable(relativeFrets, maxFret, capoFret)) {
+    return null
+  }
+
+  return buildTranslatedShape(relativeFrets, tuningMidi, capoFret, maxFret, preferFlats)
+}
+
+function getOpenShapeNameForCapo(chordName: string, capoFret: number): string | null {
+  if (capoFret === 0) {
+    return STANDARD_OPEN_SHAPES[chordName] ? chordName : null
+  }
+
+  const match = chordName.match(/^([A-G](?:#|b)?)(.*)$/)
+  if (!match) {
+    return null
+  }
+
+  const [, root, suffix] = match
+  const shapeRootPc = normalizePitchClass(parseNoteName(root) - capoFret)
+  const candidates = [
+    `${pitchClassToNote(shapeRootPc, false)}${suffix}`,
+    `${pitchClassToNote(shapeRootPc, true)}${suffix}`,
+  ]
+
+  return candidates.find((candidate) => STANDARD_OPEN_SHAPES[candidate]) ?? null
+}
+
+function isStandardTuning(tuningMidi: number[]): boolean {
+  return tuningMidi.length === STANDARD_TUNING_MIDI.length && tuningMidi.every((midi, index) => midi === STANDARD_TUNING_MIDI[index])
+}
+
+function buildTranslatedShape(
+  relativeFrets: ShapeFret[],
+  tuningMidi: number[],
+  capoFret: number,
+  maxFret: number,
+  preferFlats: boolean,
+): TranslatedShape {
+  const absoluteFrets = relativeFrets.map((fret) => (fret === 'x' ? 'x' : fret + capoFret))
+  const notes = relativeFrets
+    .map((fret, stringIndex) => {
+      if (fret === 'x') {
+        return null
+      }
+
+      const midi = tuningMidi[stringIndex] + fret + capoFret
+      return midiToNoteName(midi, preferFlats)
+    })
+    .filter((entry): entry is string => Boolean(entry))
+
+  return {
+    relativeFrets,
+    absoluteFrets,
+    playable: isPlayable(relativeFrets, maxFret, capoFret),
+    notes,
+  }
+}
+
+function getShapeCacheKey({
+  tuningMidi,
+  chordTones,
+  rootPitchClass,
+  bassPitchClass,
+  chordName,
+  capoFret,
+  maxFret,
+  preferFlats,
+}: SolveShapesInput): string {
+  const tones = [...chordTones].sort((a, b) => a - b).join(',')
+  return [
+    tuningMidi.join(','),
+    tones,
+    rootPitchClass,
+    bassPitchClass ?? 'root',
+    chordName,
+    capoFret,
+    maxFret,
+    preferFlats ? 'flat' : 'sharp',
+  ].join('|')
+}
+
+function cloneTranslatedShape(shape: TranslatedShape): TranslatedShape {
+  return {
+    relativeFrets: [...shape.relativeFrets],
+    absoluteFrets: [...shape.absoluteFrets],
+    playable: shape.playable,
+    notes: [...shape.notes],
+  }
+}
+
+function setShapeCache(cacheKey: string, shapes: TranslatedShape[]): void {
+  if (shapeCache.size >= SHAPE_CACHE_LIMIT) {
+    const oldestKey = shapeCache.keys().next().value
+    if (oldestKey) {
+      shapeCache.delete(oldestKey)
     }
-  })
+  }
+
+  shapeCache.set(cacheKey, shapes.map(cloneTranslatedShape))
 }
 
 function evaluateShape(
@@ -223,6 +423,7 @@ function evaluateShape(
   tuningMidi: number[],
   chordTones: Set<number>,
   rootPitchClass: number,
+  bassPitchClass: number | undefined,
   capoFret: number,
 ): ShapeCandidate | null {
   const sounding = frets
@@ -249,6 +450,11 @@ function evaluateShape(
     return null
   }
 
+  const bass = sounding[0]
+  if (bassPitchClass !== undefined && bass.pitchClass !== bassPitchClass) {
+    return null
+  }
+
   const distinctToneCount = new Set(sounding.map((entry) => entry.pitchClass)).size
   if (distinctToneCount < 2) {
     return null
@@ -264,8 +470,7 @@ function evaluateShape(
   }
 
   const muted = frets.filter((fret) => fret === 'x').length
-  const bass = sounding[0]
-  const rootInBassBonus = bass.pitchClass === rootPitchClass ? -1 : 0
+  const rootInBassBonus = bassPitchClass === undefined && bass.pitchClass === rootPitchClass ? -1 : 0
   const triadCoveragePenalty = chordTones.size > distinctToneCount ? 1.5 : 0
   const openStringBonus = playedFrets.filter((fret) => fret === 0).length * -0.2
 
@@ -306,6 +511,6 @@ export function getCapoAdjustedTuningPitchClasses(tuning: TuningDef, capoFret: n
 
 export function transposeProgressionKeyForCapo(key: string, capoFret: number): string {
   const keyPc = parseNoteName(key)
-  const transposed = normalizePitchClass(keyPc + capoFret)
+  const transposed = normalizePitchClass(keyPc - capoFret)
   return midiToNoteName(transposed, prefersFlatsForKey(key))
 }

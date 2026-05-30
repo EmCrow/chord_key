@@ -1,6 +1,9 @@
 import type { HarmonyMode, NashvilleChord } from '../types'
 import { normalizePitchClass, parseNoteName, pitchClassToNote, prefersFlatsForKey } from './notes'
 
+export type ChordQuality = 'maj' | 'min' | 'dim' | 'aug' | 'sus2' | 'sus4' | 'power'
+export type ChordSeventh = 'maj7' | 'min7' | 'dom7' | 'dim7'
+
 const MAJOR_DEGREE_INTERVALS = [0, 2, 4, 5, 7, 9, 11]
 const MAJOR_DEGREE_QUALITIES: Array<'maj' | 'min' | 'dim'> = ['maj', 'min', 'min', 'maj', 'maj', 'min', 'dim']
 const MAJOR_ROMAN_NUMERALS = ['I', 'ii', 'iii', 'IV', 'V', 'vi', 'vii°']
@@ -13,7 +16,7 @@ export interface ParsedNashvilleToken {
   raw: string
   degree: number
   quality: 'maj' | 'min' | 'dim'
-  seventh?: 'maj7' | 'min7' | 'dom7' | 'dim7'
+  seventh?: ChordSeventh
 }
 
 function getDegreeIntervals(mode: HarmonyMode): number[] {
@@ -29,10 +32,23 @@ function getRomanNumerals(mode: HarmonyMode): string[] {
 }
 
 export function getChordIntervals(
-  quality: 'maj' | 'min' | 'dim',
-  seventh?: 'maj7' | 'min7' | 'dom7' | 'dim7',
+  quality: ChordQuality,
+  seventh?: ChordSeventh,
 ): number[] {
-  const triad = quality === 'maj' ? [0, 4, 7] : quality === 'min' ? [0, 3, 7] : [0, 3, 6]
+  const triad =
+    quality === 'maj'
+      ? [0, 4, 7]
+      : quality === 'min'
+        ? [0, 3, 7]
+        : quality === 'dim'
+          ? [0, 3, 6]
+          : quality === 'aug'
+            ? [0, 4, 8]
+            : quality === 'sus2'
+              ? [0, 2, 7]
+              : quality === 'sus4'
+                ? [0, 5, 7]
+                : [0, 7]
 
   if (!seventh) {
     return triad

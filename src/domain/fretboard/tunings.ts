@@ -15,6 +15,8 @@ export const TUNINGS: TuningDef[] = [
   { id: 'new_standard', label: 'New Standard (C G D A E G)', strings: ['C2', 'G2', 'D3', 'A3', 'E4', 'G4'] },
 ]
 
+const tuningMidiCache = new Map<string, number[]>()
+
 export function getTuningById(id: string): TuningDef {
   const tuning = TUNINGS.find((entry) => entry.id === id)
   if (!tuning) {
@@ -24,5 +26,14 @@ export function getTuningById(id: string): TuningDef {
 }
 
 export function tuningToMidi(tuning: TuningDef): number[] {
-  return tuning.strings.map((note) => noteToMidi(note))
+  const cacheKey = `${tuning.id}:${tuning.strings.join(',')}`
+  const cached = tuningMidiCache.get(cacheKey)
+
+  if (cached) {
+    return [...cached]
+  }
+
+  const midi = tuning.strings.map((note) => noteToMidi(note))
+  tuningMidiCache.set(cacheKey, midi)
+  return [...midi]
 }

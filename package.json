@@ -8,6 +8,7 @@
     "dev": "vite",
     "start": "vite preview",
     "build": "tsc -b && vite build",
+    "package:static": "node scripts/package-static.mjs",
     "typecheck": "tsc -b",
     "lint": "eslint .",
     "gate": "npm run lint && npm run test && npm run research:validate-sources && npm run typecheck && npm run build",

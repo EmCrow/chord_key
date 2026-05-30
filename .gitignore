@@ -23,6 +23,7 @@ dist-ssr
 *.sln
 *.sw?
 coverage
+release
 LOCAL_DEV_CHANGELOG.md
 AGENTS.md
 agents/*.md

@@ -24,24 +24,28 @@ Changing key updates all modules.
 
 ## 4. Translate Chord Progressions
 In the Tuning Translator:
-- Enter progression using Nashville tokens: `1`, `5`, `6m`, `2m7`, `7dim`.
+- Enter typed chord-chart symbols: `C`, `G`, `Am`, `F`, `Dm7`, `G7`, `Cmaj7`, `C/E`, `Fsus4`, `Caug`, `G5`, or `Bm7b5`.
 - Select original and target tunings.
 - Set new tuning capo (0-12).
 
 ### Output Columns
-- `Original Shape`: baseline shape in original tuning.
-- `Translated (Relative)`: fret shape relative to capo.
-- `Translated (Absolute)`: actual fret numbers from the nut.
+- `Original Chord Shape`: baseline shape in original tuning.
+- `Translated Chord Shape`: fret shape relative to capo.
+- `Research-backed Shape`: verified offline voicing when one is available.
 
 ## Example Workflows
 ### Same tuning + capo
 - Original: Standard
 - New: Standard
 - Capo: 2
-- Progression: `1 5 6m 4`
+- Progression: `C G Am F`
 
 ### Alternate tuning + capo
 - Original: Standard
 - New: DADGAD
 - Capo: 2
-- Progression: `1 4 5 1`
+- Progression: `D G A D`
+
+### Slash chords and color chords
+- Progression: `C/E Fsus4 G7 Cmaj7`
+- Slash chords prefer the requested bass note as the lowest sounding note when a playable shape exists.

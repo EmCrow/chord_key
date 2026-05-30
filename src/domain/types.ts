@@ -85,3 +85,13 @@ export interface ResearchTranspositionMatch {
   toRelativeFrets: Array<number | 'x'>
   sourceId: string
 }
+
+export interface ResearchSuggestion {
+  chordSymbol: string
+  tuningId: string
+  relativeFrets: Array<number | 'x'>
+  absoluteFrets: Array<number | 'x'>
+  sourceId: string
+  sourceName: string
+  fallbackTuningId?: string
+}

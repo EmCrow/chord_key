@@ -8,72 +8,70 @@ interface NashvilleTableProps {
   onSelectionChange: (nextKey: string, nextDegree: number, nextMode: HarmonyMode) => void
 }
 
-const KEY_SET = ['C', 'G', 'D', 'A', 'E', 'B', 'F#', 'Db', 'Ab', 'Eb', 'Bb', 'F']
-const NASHVILLE_ROWS = [
-  ...KEY_SET.map((note) => ({ note, mode: 'major' as const, label: note })),
-  ...KEY_SET.map((note) => ({ note, mode: 'minor' as const, label: `${note}m` })),
-]
+const COMMON_DEGREES = [1, 4, 5, 6]
 
 export function NashvilleTable({ keyNote, harmonyMode, activeDegree, onSelectionChange }: NashvilleTableProps) {
   const selectedChords = getNashvilleChords(keyNote, harmonyMode)
+  const commonChords = selectedChords.filter((chord) => COMMON_DEGREES.includes(chord.degree))
+  const lessCommonChords = selectedChords.filter((chord) => !COMMON_DEGREES.includes(chord.degree))
+  const activeLessCommonDegree = lessCommonChords.some((chord) => chord.degree === activeDegree) ? String(activeDegree) : ''
 
   return (
     <section className="panel nashville" aria-label="Nashville number system">
       <header>
-        <h2>Nashville Number System</h2>
+        <div className="panel-title-row">
+          <h2>Nashville Number System</h2>
+          <div className="nashville-selects">
+            <label className="compact-select">
+              Mode
+              <select
+                value={harmonyMode}
+                onChange={(event) => onSelectionChange(keyNote, 1, event.target.value as HarmonyMode)}
+              >
+                <option value="major">Major</option>
+                <option value="minor">Minor</option>
+              </select>
+            </label>
+            <label className="compact-select">
+              More
+              <select
+                value={activeLessCommonDegree}
+                onChange={(event) => {
+                  if (event.target.value) {
+                    onSelectionChange(keyNote, Number(event.target.value), harmonyMode)
+                  }
+                }}
+              >
+                <option value="">2, 3, 7</option>
+                {lessCommonChords.map((chord) => (
+                  <option key={chord.degree} value={chord.degree}>
+                    {chord.roman} - {chord.chordName}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+        </div>
         <p>
-          Top row is Roman numerals. First column is key/mode. Pick any cell to drive the active key, mode, and chord
-          degree.
+          {harmonyMode === 'major' ? keyNote : `${keyNote}m`} common session chords first; less common degrees stay in
+          the dropdown.
         </p>
       </header>
 
-      <div className="nashville-table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th scope="col">Key</th>
-              {selectedChords.map((chord) => (
-                <th scope="col" key={chord.degree}>
-                  {chord.roman}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {NASHVILLE_ROWS.map((row) => {
-              const chords = getNashvilleChords(row.note, row.mode)
-              const rowSelected = row.note === keyNote && row.mode === harmonyMode
-
-              return (
-                <tr key={`${row.note}-${row.mode}`} className={rowSelected ? 'active-row' : ''}>
-                  <th scope="row">
-                    <button
-                      type="button"
-                      className={`key-chip ${rowSelected ? 'active' : ''}`}
-                      onClick={() => onSelectionChange(row.note, 1, row.mode)}
-                    >
-                      {row.label}
-                    </button>
-                  </th>
-                  {chords.map((chord) => {
-                    const isSelected = rowSelected && chord.degree === activeDegree
-                    return (
-                      <td key={`${row.note}-${row.mode}-${chord.degree}`}>
-                        <button
-                          type="button"
-                          className={`chord-chip ${isSelected ? 'active' : ''}`}
-                          onClick={() => onSelectionChange(row.note, chord.degree, row.mode)}
-                        >
-                          {chord.chordName}
-                        </button>
-                      </td>
-                    )
-                  })}
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
+      <div className="nashville-compact">
+        {commonChords.map((chord) => (
+          <button
+            type="button"
+            className={`nashville-degree-card ${chord.degree === activeDegree ? 'active' : ''}`}
+            key={chord.degree}
+            aria-label={`${chord.roman} ${chord.chordName} ${chord.degree}`}
+            onClick={() => onSelectionChange(keyNote, chord.degree, harmonyMode)}
+          >
+            <span>{chord.roman}</span>
+            <strong>{chord.chordName}</strong>
+            <small>{chord.degree}</small>
+          </button>
+        ))}
       </div>
     </section>
   )

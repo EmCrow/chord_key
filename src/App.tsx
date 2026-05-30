@@ -8,7 +8,14 @@ import { useWorkbenchState } from './state/useWorkbenchState'
 
 function App() {
   const { state, actions } = useWorkbenchState()
-  const { scaleDef, targetTuning, fretboardMap, translationResults } = useWorkbenchDerivedData(state)
+  const {
+    scaleDef,
+    targetTuning,
+    fretboardMap,
+    translationResults,
+    translationResearchSuggestions,
+    activeChordResearchSuggestion,
+  } = useWorkbenchDerivedData(state)
 
   return (
     <main className="app-shell">
@@ -79,6 +86,7 @@ function App() {
           scaleName={scaleDef.name}
           cagedShape={state.cagedShape}
           capoFret={state.tuningTargetCapo}
+          activeResearchSuggestion={activeChordResearchSuggestion}
           showNoteNames={state.showNoteNames}
           showIntervals={state.showIntervals}
         />
@@ -87,6 +95,7 @@ function App() {
           onProgressionChange={actions.setProgressionInput}
           targetCapo={state.tuningTargetCapo}
           translationResults={translationResults}
+          researchSuggestions={translationResearchSuggestions}
         />
       </section>
     </main>

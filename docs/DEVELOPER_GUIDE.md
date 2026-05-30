@@ -11,11 +11,17 @@
 - `src/components/*`: UI-only components
 - `src/App.tsx`: central app state and derived selectors
 
+## Music Theory Boundaries
+- Keep note spelling, chord intervals, scale intervals, and Nashville calculations in `src/domain/music/*`.
+- Translator parsing may accept chart syntax, but interval math should come from `src/domain/music/harmony.ts`.
+- Add tests for every new chord quality, suffix, scale, or capo transposition rule.
+
 ## Capo Translation Rules
 - Capo applies only to **new tuning** translation context.
 - Relative frets are shown as played against capo.
 - Absolute frets are computed as `relative + capo`.
 - Fretboard display uses new tuning + capo to keep translator and visualization synchronized.
+- For a target concert key, `transposeProgressionKeyForCapo(key, capo)` returns the lower open-shape key a player would use with the capo.
 
 ## Development Workflow
 ```bash
@@ -23,7 +29,10 @@ npm run dev
 npm run test
 npm run typecheck
 npm run build
+npm run package:static
 ```
+
+`npm run package:static` writes `release/chords-and-key-static/`, which can be handed to a nontechnical user for Netlify Drop, Vercel static upload/import, or any plain static host.
 
 ## Extending the App
 ### Add a scale
