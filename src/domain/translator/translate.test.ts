@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { getTuningById } from '../fretboard/tunings'
 import {
   getCapoAdjustedTuningPitchClasses,
+  getOpenChordShapeNameForCapo,
   parseLetterChordProgression,
   transposeProgressionKeyForCapo,
   translateProgressionShapes,
@@ -77,6 +78,23 @@ describe('translator capo behavior', () => {
 
     expect(results[0].translatedShape?.relativeFrets).toEqual(['x', 3, 2, 0, 1, 0])
     expect(results[0].translatedShape?.absoluteFrets).toEqual(['x', 8, 7, 5, 6, 5])
+    expect(results[0].translatedShape?.openChordShape).toBe('C')
+  })
+
+  it('labels the open chord shape that sounds under a capo', () => {
+    const standard = getTuningById('standard')
+    const results = translateProgressionShapes({
+      progression: 'C',
+      key: 'C',
+      fromTuning: standard,
+      toTuning: standard,
+      capoFret: 5,
+      maxFret: 15,
+    })
+
+    expect(getOpenChordShapeNameForCapo('C', 5)).toBe('G')
+    expect(results[0].translatedShape?.openChordShape).toBe('G')
+    expect(results[0].translatedShape?.relativeFrets).toEqual([3, 2, 0, 0, 0, 3])
   })
 
   it('ignores invalid progression tokens without throwing', () => {
