@@ -134,12 +134,50 @@ main.app-shell {
   display: flex;
   justify-content: flex-end;
   gap: 0.45rem;
-  width: min(520px, 76%);
+  width: min(220px, 38%);
 }
 
 .nashville-selects .compact-select {
   flex: 1;
   min-width: 100px;
+}
+
+.nashville,
+.circle {
+  min-width: 0;
+}
+
+.nashville {
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--surface) 86%, var(--highlight) 14%), var(--surface) 46%),
+    var(--surface);
+  overflow: hidden;
+}
+
+.nashville-key-row {
+  margin-top: 0.7rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(52px, 1fr));
+  gap: 0.35rem;
+}
+
+.nashville-key-chip {
+  border: 1px solid color-mix(in srgb, var(--border) 62%, var(--highlight) 38%);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--surface) 78%, var(--highlight) 22%), var(--surface-soft));
+  color: var(--ink);
+  padding: 0.3rem 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: inset 0 -2px 0 rgba(95, 68, 30, 0.08);
+}
+
+.nashville-key-chip.active {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
 }
 
 .compact-select select {
@@ -262,20 +300,23 @@ button:focus {
 .nashville-compact {
   margin-top: 0.75rem;
   display: grid;
-  grid-template-columns: repeat(4, minmax(82px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(74px, 1fr));
   gap: 0.55rem;
 }
 
 .nashville-degree-card {
+  min-width: 0;
   min-height: 82px;
-  border: 1px solid var(--border);
+  border: 1px solid color-mix(in srgb, var(--border) 62%, var(--highlight) 38%);
   border-radius: 8px;
-  background: var(--chip-bg);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--surface) 80%, var(--highlight) 20%), var(--surface-soft));
   color: var(--ink);
   display: grid;
   place-items: center;
   gap: 0.1rem;
   cursor: pointer;
+  box-shadow: inset 0 -3px 0 rgba(95, 68, 30, 0.08);
 }
 
 .nashville-degree-card span {
@@ -286,8 +327,10 @@ button:focus {
 
 .nashville-degree-card strong {
   color: var(--primary);
-  font-size: 1.18rem;
+  font-size: 1.08rem;
   line-height: 1;
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 
 .nashville-degree-card small {
@@ -298,12 +341,21 @@ button:focus {
 .nashville-degree-card.active {
   background: var(--primary);
   color: #fff;
+  border-color: var(--primary);
+  box-shadow:
+    inset 0 -3px 0 rgba(0, 0, 0, 0.16),
+    0 0 0 3px color-mix(in srgb, var(--primary) 18%, transparent 82%);
 }
 
 .nashville-degree-card.active span,
 .nashville-degree-card.active strong,
 .nashville-degree-card.active small {
   color: #fff;
+}
+
+.nashville-degree-card.secondary {
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--surface-soft) 88%, var(--accent) 12%), var(--surface));
 }
 
 .circle {
@@ -1389,6 +1441,10 @@ button:focus {
 
   .nashville-compact {
     grid-template-columns: repeat(2, minmax(120px, 1fr));
+  }
+
+  .nashville-key-row {
+    grid-template-columns: repeat(4, minmax(56px, 1fr));
   }
 
   .translator th,

@@ -92,17 +92,15 @@ describe('App integration', () => {
     expect(within(fretboardPanel).getByRole('cell', { name: /A2 string fret 3: C.*selected chord shape fret/i })).toBeInTheDocument()
   })
 
-  it('keeps Nashville compact with common degrees and a dropdown for less common degrees', async () => {
-    const user = userEvent.setup()
+  it('shows all seven Nashville chord degrees as visible cards', () => {
     render(<App />)
 
     const nashvillePanel = screen.getByRole('region', { name: 'Nashville number system' })
     expect(within(nashvillePanel).getByRole('button', { name: /I C 1/i })).toBeInTheDocument()
     expect(within(nashvillePanel).getByRole('button', { name: /IV F 4/i })).toBeInTheDocument()
-    expect(within(nashvillePanel).queryByRole('button', { name: /ii Dm 2/i })).not.toBeInTheDocument()
-
-    await user.selectOptions(within(nashvillePanel).getByLabelText('More'), '2')
-    expect(within(nashvillePanel).getByLabelText('More')).toHaveValue('2')
+    expect(within(nashvillePanel).getByRole('button', { name: /ii Dm 2/i })).toBeInTheDocument()
+    expect(within(nashvillePanel).getByRole('button', { name: /iii Em 3/i })).toBeInTheDocument()
+    expect(within(nashvillePanel).getByRole('button', { name: /vii° Bdim 7/i })).toBeInTheDocument()
   })
 
   it('tags all seven active key degrees on the circle of fifths', () => {
@@ -122,7 +120,7 @@ describe('App integration', () => {
     const controlsPanel = screen.getByRole('region', { name: 'Global controls' })
 
     await user.selectOptions(within(nashvillePanel).getByLabelText('Mode'), 'minor')
-    await user.selectOptions(within(nashvillePanel).getByLabelText('Key'), 'E')
+    await user.click(within(nashvillePanel).getByRole('button', { name: 'Key Em' }))
 
     expect(within(controlsPanel).getByLabelText('Key')).toHaveValue('E')
     expect(within(nashvillePanel).getByRole('button', { name: /i Em 1/i })).toHaveClass('active')
