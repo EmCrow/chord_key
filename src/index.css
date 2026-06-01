@@ -125,7 +125,7 @@ main.app-shell {
 }
 
 .compact-select {
-  width: min(180px, 48%);
+  width: min(180px, 100%);
   gap: 0.2rem;
   font-size: 0.75rem;
 }
@@ -134,11 +134,12 @@ main.app-shell {
   display: flex;
   justify-content: flex-end;
   gap: 0.45rem;
-  width: min(360px, 58%);
+  width: min(520px, 76%);
 }
 
 .nashville-selects .compact-select {
-  width: 50%;
+  flex: 1;
+  min-width: 100px;
 }
 
 .compact-select select {

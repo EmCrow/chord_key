@@ -9,6 +9,8 @@ interface NashvilleTableProps {
 }
 
 const COMMON_DEGREES = [1, 4, 5, 6]
+const COMMON_MAJOR_KEYS = ['C', 'G', 'D', 'A', 'E', 'F', 'Bb', 'Eb']
+const COMMON_MINOR_KEYS = ['A', 'E', 'B', 'F#', 'C#', 'D', 'G', 'C']
 
 export function NashvilleTable({ keyNote, harmonyMode, activeDegree, onSelectionChange }: NashvilleTableProps) {
   const selectedChords = getNashvilleChords(keyNote, harmonyMode)
@@ -22,6 +24,19 @@ export function NashvilleTable({ keyNote, harmonyMode, activeDegree, onSelection
         <div className="panel-title-row">
           <h2>Nashville Number System</h2>
           <div className="nashville-selects">
+            <label className="compact-select">
+              Key
+              <select
+                value={keyNote}
+                onChange={(event) => onSelectionChange(event.target.value, 1, harmonyMode)}
+              >
+                {(harmonyMode === 'major' ? COMMON_MAJOR_KEYS : COMMON_MINOR_KEYS).map((note) => (
+                  <option key={note} value={note}>
+                    {harmonyMode === 'major' ? note : `${note}m`}
+                  </option>
+                ))}
+              </select>
+            </label>
             <label className="compact-select">
               Mode
               <select

@@ -8,7 +8,8 @@ describe('App integration', () => {
     const user = userEvent.setup()
     render(<App />)
 
-    await user.selectOptions(screen.getByLabelText('Key'), 'G')
+    const controlsPanel = screen.getByRole('region', { name: 'Global controls' })
+    await user.selectOptions(within(controlsPanel).getByLabelText('Key'), 'G')
     expect(screen.getByText('Active Key')).toBeInTheDocument()
     expect(screen.getAllByText('G').length).toBeGreaterThan(0)
 
@@ -24,7 +25,8 @@ describe('App integration', () => {
     render(<App />)
 
     const nashvillePanel = screen.getByRole('region', { name: 'Nashville number system' })
-    await user.selectOptions(screen.getByLabelText('Key'), 'A')
+    const controlsPanel = screen.getByRole('region', { name: 'Global controls' })
+    await user.selectOptions(within(controlsPanel).getByLabelText('Key'), 'A')
     await user.selectOptions(within(nashvillePanel).getByLabelText('Mode'), 'minor')
 
     expect(within(nashvillePanel).getByRole('button', { name: /i Am 1/i })).toHaveClass('active')
@@ -110,5 +112,19 @@ describe('App integration', () => {
     for (const roman of ['I', 'ii', 'iii', 'IV', 'V', 'vi', 'vii°']) {
       expect(within(circlePanel).getAllByText(roman).length).toBeGreaterThan(0)
     }
+  })
+
+  it('lets Nashville panel pick common keys and syncs the app key', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    const nashvillePanel = screen.getByRole('region', { name: 'Nashville number system' })
+    const controlsPanel = screen.getByRole('region', { name: 'Global controls' })
+
+    await user.selectOptions(within(nashvillePanel).getByLabelText('Mode'), 'minor')
+    await user.selectOptions(within(nashvillePanel).getByLabelText('Key'), 'E')
+
+    expect(within(controlsPanel).getByLabelText('Key')).toHaveValue('E')
+    expect(within(nashvillePanel).getByRole('button', { name: /i Em 1/i })).toHaveClass('active')
   })
 })
