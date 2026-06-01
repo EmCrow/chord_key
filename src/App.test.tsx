@@ -101,6 +101,9 @@ describe('App integration', () => {
     expect(within(nashvillePanel).getByRole('button', { name: /ii Dm 2/i })).toBeInTheDocument()
     expect(within(nashvillePanel).getByRole('button', { name: /iii Em 3/i })).toBeInTheDocument()
     expect(within(nashvillePanel).getByRole('button', { name: /vii° Bdim 7/i })).toBeInTheDocument()
+    expect(within(nashvillePanel).getByText('Selected chord')).toBeInTheDocument()
+    expect(within(nashvillePanel).getByText('Chord construction')).toBeInTheDocument()
+    expect(within(nashvillePanel).getByText('Voice leading')).toBeInTheDocument()
   })
 
   it('tags all seven active key degrees on the circle of fifths', () => {
@@ -124,5 +127,18 @@ describe('App integration', () => {
 
     expect(within(controlsPanel).getByLabelText('Key')).toHaveValue('E')
     expect(within(nashvillePanel).getByRole('button', { name: /i Em 1/i })).toHaveClass('active')
+  })
+
+  it('updates Nashville learning details for the selected chord function', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    const nashvillePanel = screen.getByRole('region', { name: 'Nashville number system' })
+    await user.click(within(nashvillePanel).getByRole('button', { name: /V G 5/i }))
+
+    expect(within(nashvillePanel).getByText('V in C')).toBeInTheDocument()
+    expect(within(nashvillePanel).getAllByText('Dominant').length).toBeGreaterThan(0)
+    expect(within(nashvillePanel).getByText('G -> C')).toBeInTheDocument()
+    expect(within(nashvillePanel).getByText(/Chord tones 1 3 5 use scale degrees 5 7 2/i)).toBeInTheDocument()
   })
 })
