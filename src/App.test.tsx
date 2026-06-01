@@ -47,6 +47,7 @@ describe('App integration', () => {
     expect(screen.getAllByText(/fallback tuning standard/i).length).toBeGreaterThan(0)
 
     const fretboardPanel = screen.getByRole('region', { name: '15 fret fretboard' })
+    expect(within(fretboardPanel).getByRole('columnheader', { name: 'Nut' })).toBeInTheDocument()
     expect(within(fretboardPanel).getByRole('columnheader', { name: '15' })).toBeInTheDocument()
     expect(within(fretboardPanel).queryByRole('columnheader', { name: '16' })).not.toBeInTheDocument()
   })
@@ -60,6 +61,20 @@ describe('App integration', () => {
       .map((header) => header.textContent)
 
     expect(stringHeaders).toEqual(['E4', 'B3', 'G3', 'D3', 'A2', 'E2'])
+  })
+
+  it('highlights the exact research-backed chord shape frets on the fretboard', () => {
+    render(<App />)
+
+    const fretboardPanel = screen.getByRole('region', { name: '15 fret fretboard' })
+    const shapeFrets = within(fretboardPanel).getAllByRole('cell', { name: /selected chord shape fret/i })
+
+    expect(shapeFrets).toHaveLength(5)
+    expect(within(fretboardPanel).getByRole('cell', { name: /E4 string fret 3: G.*selected chord shape fret/i })).toBeInTheDocument()
+    expect(within(fretboardPanel).getByRole('cell', { name: /B3 string fret 5: E.*selected chord shape fret/i })).toBeInTheDocument()
+    expect(within(fretboardPanel).getByRole('cell', { name: /G3 string fret 5: C.*selected chord shape fret/i })).toBeInTheDocument()
+    expect(within(fretboardPanel).getByRole('cell', { name: /D3 string fret 5: G.*selected chord shape fret/i })).toBeInTheDocument()
+    expect(within(fretboardPanel).getByRole('cell', { name: /A2 string fret 3: C.*selected chord shape fret/i })).toBeInTheDocument()
   })
 
   it('keeps Nashville compact with common degrees and a dropdown for less common degrees', async () => {

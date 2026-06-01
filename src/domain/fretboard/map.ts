@@ -36,6 +36,7 @@ export function getFretboardMap({
       const soundingMidi = openStringMidi + fret + capoFret
       const pitchClass = normalizePitchClass(soundingMidi)
       const isScaleTone = scaleSet.has(pitchClass)
+      const isInCagedWindow = fret >= cagedWindow.startFret && fret <= cagedWindow.endFret
 
       positions.push({
         stringIndex,
@@ -45,7 +46,8 @@ export function getFretboardMap({
         noteName: midiToNoteName(soundingMidi, preferFlats),
         isScaleTone,
         isRoot: pitchClass === keyPitchClass,
-        isInCagedShape: fret >= cagedWindow.startFret && fret <= cagedWindow.endFret && isScaleTone,
+        isInCagedWindow,
+        isInCagedShape: isInCagedWindow && isScaleTone,
         isChordTone: activeChordSet.size > 0 && activeChordSet.has(pitchClass),
       })
     }

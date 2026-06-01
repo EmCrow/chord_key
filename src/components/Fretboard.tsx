@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, type CSSProperties } from 'react'
 import type { FretPosition, ResearchSuggestion, TuningDef } from '../domain/types'
 import { normalizePitchClass, parseNoteName } from '../domain/music/notes'
 import { formatShape } from '../domain/translator/translate'
@@ -43,6 +43,15 @@ export function Fretboard({
     })
     return nextMap
   }, [positions])
+  const activeShapeFrets = useMemo(() => {
+    const nextSet = new Set<string>()
+    activeResearchSuggestion?.absoluteFrets.forEach((fret, stringIndex) => {
+      if (fret !== 'x') {
+        nextSet.add(`${stringIndex}-${fret}`)
+      }
+    })
+    return nextSet
+  }, [activeResearchSuggestion])
   const displayStringIndexes = useMemo(() => tuning.strings.map((_, index) => index).reverse(), [tuning.strings])
 
   return (
@@ -69,24 +78,73 @@ export function Fretboard({
         </p>
       </header>
 
+      <div className="fretboard-legend" aria-label="Fretboard highlighting legend">
+        <span>
+          <i className="legend-dot root" aria-hidden="true" />
+          Home note
+        </span>
+        <span>
+          <i className="legend-dot scale" aria-hidden="true" />
+          In the scale
+        </span>
+        <span>
+          <i className="legend-dot chord" aria-hidden="true" />
+          Chord color
+        </span>
+        <span>
+          <i className="legend-dot chord-shape" aria-hidden="true" />
+          Chord shape
+        </span>
+        <span>
+          <i className="legend-dot caged" aria-hidden="true" />
+          Shape zone
+        </span>
+      </div>
+
       <div className="fretboard-table-wrap">
+        <div className="fretboard-read-guide" aria-hidden="true">
+          <span>Start at the nut</span>
+          <strong>{cagedShape} shape practice zone</strong>
+          <span>soft glow marks the selected CAGED shape</span>
+        </div>
         <table>
           <thead>
             <tr>
               <th>String</th>
-              {Array.from({ length: maxFret + 1 }, (_, fret) => (
-                <th key={fret} className={capoFret > 0 && fret === capoFret ? 'capo-col' : ''}>
-                  {fret}
-                </th>
-              ))}
+              {Array.from({ length: maxFret + 1 }, (_, fret) => {
+                const headerClasses = [
+                  fret === 0 ? 'nut-col' : '',
+                  capoFret > 0 && fret === capoFret ? 'capo-col' : '',
+                ]
+                  .filter(Boolean)
+                  .join(' ')
+
+                return (
+                  <th key={fret} className={headerClasses} aria-label={fret === 0 ? 'Nut' : undefined}>
+                    {fret === 0 ? (
+                      <span className="nut-badge" aria-hidden="true">
+                        <i />
+                        <small>nut</small>
+                      </span>
+                    ) : (
+                      fret
+                    )}
+                  </th>
+                )
+              })}
             </tr>
           </thead>
           <tbody>
             {displayStringIndexes.map((stringIndex) => {
               const stringNote = tuning.strings[stringIndex]
+              const stringGauge = 1.6 + (tuning.strings.length - 1 - stringIndex) * 0.55
 
               return (
-                <tr key={stringNote + stringIndex}>
+                <tr
+                  key={stringNote + stringIndex}
+                  className="fretboard-string-row"
+                  style={{ '--string-gauge': `${stringGauge}px` } as CSSProperties & Record<string, string>}
+                >
                   <th scope="row">{stringNote}</th>
                   {Array.from({ length: maxFret + 1 }, (_, fret) => {
                     const position = byStringAndFret.get(`${stringIndex}-${fret}`)
@@ -94,10 +152,12 @@ export function Fretboard({
                       return <td key={fret} />
                     }
 
+                    const isActiveShapeFret = activeShapeFrets.has(`${stringIndex}-${fret}`)
                     const noteClasses = [
                       'note-dot',
                       position.isScaleTone ? 'scale' : 'off-scale',
                       position.isInCagedShape ? 'caged' : '',
+                      isActiveShapeFret ? 'chord-shape' : '',
                       position.isRoot && position.isScaleTone ? 'root' : '',
                       position.isChordTone && position.isScaleTone ? 'chord' : '',
                     ]
@@ -112,14 +172,31 @@ export function Fretboard({
 
                     const dimmed = !position.isScaleTone || (capoFret > 0 && fret < capoFret)
                     const fretClasses = [
+                      'fretboard-string-cell',
+                      fret === 0 ? 'open-string-cell' : '',
                       capoFret > 0 && fret === capoFret ? 'capo-col' : '',
+                      position.isScaleTone ? 'scale-tone-cell' : 'off-scale-cell',
+                      position.isRoot && position.isScaleTone ? 'root-tone-cell' : '',
+                      position.isChordTone && position.isScaleTone ? 'chord-tone-cell' : '',
+                      position.isInCagedWindow ? 'caged-window-cell' : '',
                       position.isInCagedShape ? 'scale-fret' : '',
+                      isActiveShapeFret ? 'chord-shape-cell' : '',
                     ]
                       .filter(Boolean)
                       .join(' ')
 
                     return (
-                      <td key={fret} className={fretClasses}>
+                      <td
+                        key={fret}
+                        className={fretClasses}
+                        aria-label={`${stringNote} string fret ${fret}: ${position.noteName}${
+                          position.isScaleTone ? ', scale tone' : ', off scale'
+                        }${position.isInCagedWindow ? `, ${cagedShape} CAGED shape zone` : ''}${
+                          position.isRoot ? ', root' : ''
+                        }${position.isChordTone ? ', active chord tone' : ''}${
+                          isActiveShapeFret ? ', selected chord shape fret' : ''
+                        }`}
+                      >
                         <span className={`${noteClasses}${dimmed ? ' muted' : ''}`}>{label}</span>
                       </td>
                     )

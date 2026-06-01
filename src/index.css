@@ -627,28 +627,339 @@ button:focus {
 
 .fretboard {
   grid-column: 1 / span 2;
+  --fretboard-board: color-mix(in srgb, var(--accent) 58%, #163a33 42%);
+  --fretboard-board-dark: color-mix(in srgb, var(--accent) 34%, #0f2522 66%);
+  --fretboard-paper: #fff8df;
+  --fretboard-pencil: #29303a;
+  --fretboard-chalk: #f8efd0;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--surface) 86%, var(--highlight) 14%), var(--surface) 46%),
+    var(--surface);
+  overflow: hidden;
+}
+
+:root[data-theme='dark'] .fretboard {
+  --fretboard-paper: #efe3b8;
+  --fretboard-pencil: #14231f;
+  --fretboard-chalk: #f4e8bf;
+}
+
+.fretboard-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.75rem;
+}
+
+.fretboard-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.32rem;
+  border: 1px solid color-mix(in srgb, var(--border) 58%, var(--highlight) 42%);
+  border-radius: 999px;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--surface) 80%, var(--highlight) 20%), var(--surface-soft));
+  color: var(--ink);
+  padding: 0.28rem 0.56rem;
+  font-size: 0.76rem;
+  font-weight: 900;
+  box-shadow: inset 0 -2px 0 rgba(95, 68, 30, 0.08);
+}
+
+.legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  display: inline-block;
+  background: color-mix(in srgb, var(--fretboard-paper) 70%, var(--highlight) 30%);
+  border: 1px solid transparent;
+}
+
+.legend-dot.root {
+  background: var(--highlight);
+  border-color: color-mix(in srgb, var(--highlight) 65%, black 35%);
+}
+
+.legend-dot.chord {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 22%, transparent 78%);
+}
+
+.legend-dot.chord-shape {
+  background: color-mix(in srgb, var(--primary) 54%, var(--fretboard-paper) 46%);
+  border-color: #fff;
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--primary) 34%, transparent 66%),
+    0 0 8px color-mix(in srgb, var(--primary) 32%, transparent 68%);
+}
+
+.legend-dot.caged {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 28%, transparent 72%);
+}
+
+.fretboard-table-wrap {
+  margin-top: 0.75rem;
+  border: 10px solid color-mix(in srgb, var(--border) 58%, #8a633c 42%);
+  border-radius: 18px;
+  padding: 0.7rem;
+  background:
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.045) 0 1px, transparent 1px 13px),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 13px),
+    linear-gradient(135deg, var(--fretboard-board), var(--fretboard-board-dark));
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.18),
+    inset 0 -22px 34px rgba(0, 0, 0, 0.18),
+    0 14px 28px rgba(17, 24, 39, 0.16);
+}
+
+.fretboard-read-guide {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.45rem;
+  margin-bottom: 0.65rem;
+  border: 1px dashed rgba(255, 255, 255, 0.32);
+  border-radius: 12px;
+  background: rgba(9, 30, 27, 0.42);
+  color: color-mix(in srgb, var(--fretboard-chalk) 82%, transparent 18%);
+  padding: 0.45rem 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.fretboard-read-guide strong {
+  color: var(--fretboard-paper);
+  font-family: 'Georgia', 'Palatino Linotype', serif;
+  font-size: 0.92rem;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.fretboard table {
+  min-width: 940px;
+  margin-top: 0;
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;
+  color: var(--fretboard-chalk);
 }
 
 .fretboard th,
 .fretboard td {
-  border: 1px solid var(--border);
-  min-width: 43px;
-  height: 44px;
+  border: 0;
+  min-width: 52px;
+  height: 52px;
   text-align: center;
-  padding: 0.15rem;
+  padding: 0;
 }
 
-.fretboard th {
-  background: color-mix(in srgb, var(--surface-soft) 70%, var(--surface) 30%);
-  font-size: 0.8rem;
+.fretboard thead th {
+  height: 34px;
+  color: color-mix(in srgb, var(--fretboard-chalk) 82%, transparent 18%);
+  font-size: 0.76rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  background: rgba(9, 30, 27, 0.6);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.fretboard thead th:not(:first-child) {
+  position: relative;
+}
+
+.fretboard thead th:not(:first-child)::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -7px;
+  z-index: 5;
+  width: 2px;
+  height: 7px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.26);
+}
+
+.fretboard thead th.nut-col {
+  background:
+    radial-gradient(circle at 50% 18%, rgba(255, 248, 223, 0.22), transparent 44%),
+    rgba(9, 30, 27, 0.68);
+}
+
+.nut-badge {
+  display: inline-grid;
+  justify-items: center;
+  gap: 0.12rem;
+  transform: translateY(1px);
+}
+
+.nut-badge i {
+  width: 26px;
+  height: 11px;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 999px;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 3px,
+      rgba(41, 48, 58, 0.32) 3px 4px
+    ),
+    linear-gradient(#fffbe9, var(--fretboard-paper) 48%, #b88a48);
+  box-shadow:
+    inset 0 -2px 0 rgba(95, 68, 30, 0.2),
+    0 1px 0 rgba(0, 0, 0, 0.34);
+}
+
+.nut-badge small {
+  color: var(--fretboard-paper);
+  font-size: 0.54rem;
+  font-weight: 900;
+  letter-spacing: 0.09em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.fretboard thead th:first-child,
+.fretboard tbody th {
+  min-width: 78px;
+  position: sticky;
+  left: 0;
+  z-index: 4;
+  background: rgba(8, 25, 22, 0.9);
+}
+
+.fretboard tbody th {
+  color: var(--fretboard-paper);
+  font-family: 'Georgia', 'Palatino Linotype', serif;
+  font-size: 0.86rem;
+  font-weight: 900;
+  border-right: 6px solid color-mix(in srgb, var(--fretboard-paper) 70%, #8a633c 30%);
+  box-shadow: 4px 0 0 rgba(0, 0, 0, 0.22);
+}
+
+.fretboard-string-cell {
+  position: relative;
+  background: rgba(8, 25, 22, 0.18);
+  border-left: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.fretboard-string-cell::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  z-index: 1;
+  height: var(--string-gauge, 2px);
+  transform: translateY(-50%);
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.34),
+    var(--fretboard-chalk) 18%,
+    #ffffff 50%,
+    var(--fretboard-chalk) 82%,
+    rgba(255, 255, 255, 0.34)
+  );
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+}
+
+.fretboard-string-cell::after {
+  content: '';
+  position: absolute;
+  right: -1px;
+  top: 11%;
+  bottom: 11%;
+  z-index: 0;
+  width: 2px;
+  border-radius: 999px;
+  background: linear-gradient(#fff5cf, #a98149 54%, #4d3924);
+  box-shadow: -1px 0 0 rgba(255, 255, 255, 0.18);
+}
+
+.fretboard-string-cell.open-string-cell {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.fretboard-string-cell.open-string-cell::after {
+  right: auto;
+  left: -1px;
+  width: 5px;
+  background: linear-gradient(#fff9df, #b88a48 56%, #5a3a1f);
+}
+
+.fretboard td.scale-tone-cell {
+  background:
+    radial-gradient(circle at 50% 50%, rgba(198, 144, 38, 0.18) 0 28%, transparent 44%),
+    rgba(8, 25, 22, 0.18);
 }
 
 .fretboard td.scale-fret {
-  background: var(--scale-fret-bg);
+  background:
+    radial-gradient(circle at 50% 50%, rgba(198, 144, 38, 0.28) 0 32%, transparent 50%),
+    linear-gradient(180deg, rgba(255, 248, 223, 0.08), rgba(255, 248, 223, 0.02)),
+    rgba(8, 25, 22, 0.2);
+}
+
+.fretboard td.root-tone-cell {
+  background:
+    radial-gradient(circle at 50% 50%, rgba(246, 199, 92, 0.36) 0 32%, transparent 54%),
+    rgba(8, 25, 22, 0.2);
+}
+
+.fretboard td.chord-tone-cell:not(.root-tone-cell) {
+  background:
+    radial-gradient(circle at 50% 50%, rgba(158, 196, 255, 0.22) 0 30%, transparent 52%),
+    rgba(8, 25, 22, 0.18);
+}
+
+.fretboard td.caged-window-cell {
+  box-shadow:
+    inset 0 0 0 999px rgba(248, 239, 208, 0.055),
+    inset 0 3px 0 rgba(198, 144, 38, 0.16),
+    inset 0 -3px 0 rgba(198, 144, 38, 0.16);
+}
+
+.fretboard td.caged-window-cell.open-string-cell {
+  box-shadow:
+    inset 0 0 0 999px rgba(248, 239, 208, 0.075),
+    inset 0 3px 0 rgba(198, 144, 38, 0.18),
+    inset 0 -3px 0 rgba(198, 144, 38, 0.18);
+}
+
+.fretboard td.chord-shape-cell {
+  background:
+    radial-gradient(circle at 50% 50%, rgba(158, 196, 255, 0.34) 0 36%, transparent 58%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)),
+    rgba(8, 25, 22, 0.18);
+}
+
+.fretboard td.chord-shape-cell::after {
+  background: linear-gradient(#e8f0ff, var(--primary) 54%, #102743);
+  box-shadow:
+    -1px 0 0 rgba(255, 255, 255, 0.3),
+    0 0 11px color-mix(in srgb, var(--primary) 48%, transparent 52%);
 }
 
 .fretboard .capo-col {
-  background: color-mix(in srgb, var(--highlight) 22%, var(--surface) 78%);
+  background:
+    linear-gradient(90deg, rgba(246, 199, 92, 0.18), rgba(246, 199, 92, 0.05)),
+    rgba(8, 25, 22, 0.2);
+}
+
+.fretboard .capo-col::after {
+  right: -2px;
+  top: 5%;
+  bottom: 5%;
+  width: 5px;
+  background: linear-gradient(#fff3a7, var(--highlight) 58%, #7d5014);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.22),
+    0 0 12px rgba(246, 199, 92, 0.34);
 }
 
 .fretboard .research-inline {
@@ -658,44 +969,87 @@ button:focus {
 }
 
 .note-dot {
+  position: relative;
+  z-index: 2;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 32px;
-  height: 32px;
+  min-width: 34px;
+  height: 34px;
   border-radius: 999px;
   font-size: 0.8rem;
-  font-weight: 700;
-  border: 1px solid transparent;
+  font-weight: 900;
+  border: 2px solid transparent;
+  font-family: 'Georgia', 'Palatino Linotype', serif;
+  box-shadow:
+    inset 0 -3px 0 rgba(95, 68, 30, 0.16),
+    0 2px 0 rgba(0, 0, 0, 0.24);
 }
 
 .note-dot.off-scale {
-  opacity: 0.26;
-  background: color-mix(in srgb, var(--surface-soft) 70%, var(--surface) 30%);
-  color: var(--muted);
+  opacity: 0.34;
+  background: rgba(9, 31, 27, 0.84);
+  color: color-mix(in srgb, var(--fretboard-chalk) 74%, transparent 26%);
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow: none;
 }
 
 .note-dot.scale {
-  background: color-mix(in srgb, var(--surface) 70%, var(--highlight) 30%);
-  color: var(--ink);
+  background:
+    radial-gradient(circle at 35% 30%, #fffef2 0%, var(--fretboard-paper) 52%, #e5d39b 100%);
+  color: var(--fretboard-pencil);
+  border-color: color-mix(in srgb, var(--fretboard-paper) 72%, #8a633c 28%);
 }
 
 .note-dot.caged {
-  border-color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 78%, white 22%);
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--accent) 34%, transparent 66%),
+    inset 0 -3px 0 rgba(95, 68, 30, 0.16),
+    0 2px 0 rgba(0, 0, 0, 0.24);
+}
+
+.note-dot.chord-shape {
+  border-color: #fff;
+  box-shadow:
+    0 0 0 4px color-mix(in srgb, var(--primary) 40%, transparent 60%),
+    0 0 14px color-mix(in srgb, var(--primary) 40%, transparent 60%),
+    inset 0 -3px 0 rgba(95, 68, 30, 0.16),
+    0 2px 0 rgba(0, 0, 0, 0.24);
 }
 
 .note-dot.chord {
-  border-color: var(--primary);
+  border-color: color-mix(in srgb, var(--primary) 78%, white 22%);
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--primary) 28%, transparent 72%),
+    inset 0 -3px 0 rgba(95, 68, 30, 0.16),
+    0 2px 0 rgba(0, 0, 0, 0.24);
 }
 
 .note-dot.root {
-  background: var(--highlight);
-  color: #111;
-  border-color: color-mix(in srgb, var(--highlight) 65%, black 35%);
+  background:
+    radial-gradient(circle at 35% 26%, #fff3a7 0%, var(--highlight) 62%, #9b6515 100%);
+  color: #17130a;
+  border-color: #fff;
+  box-shadow:
+    0 0 0 4px rgba(255, 255, 255, 0.24),
+    0 0 0 7px color-mix(in srgb, var(--highlight) 32%, transparent 68%),
+    0 3px 0 rgba(0, 0, 0, 0.28);
+}
+
+.note-dot.chord-shape,
+.note-dot.chord.chord-shape,
+.note-dot.root.chord-shape {
+  border-color: #fff;
+  box-shadow:
+    0 0 0 4px color-mix(in srgb, var(--primary) 40%, transparent 60%),
+    0 0 14px color-mix(in srgb, var(--primary) 40%, transparent 60%),
+    inset 0 -3px 0 rgba(95, 68, 30, 0.16),
+    0 2px 0 rgba(0, 0, 0, 0.24);
 }
 
 .note-dot.muted {
-  opacity: 0.35;
+  opacity: 0.34;
 }
 
 .translator-layout {

@@ -20,6 +20,7 @@ export interface FretPosition {
   noteName: string
   isScaleTone: boolean
   isRoot: boolean
+  isInCagedWindow: boolean
   isInCagedShape: boolean
   isChordTone: boolean
 }
