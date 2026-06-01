@@ -125,7 +125,7 @@ main.app-shell {
 }
 
 .compact-select {
-  width: min(180px, 48%);
+  width: min(180px, 100%);
   gap: 0.2rem;
   font-size: 0.75rem;
 }
@@ -134,11 +134,50 @@ main.app-shell {
   display: flex;
   justify-content: flex-end;
   gap: 0.45rem;
-  width: min(360px, 58%);
+  width: min(220px, 38%);
 }
 
 .nashville-selects .compact-select {
-  width: 50%;
+  flex: 1;
+  min-width: 100px;
+}
+
+.nashville,
+.circle {
+  min-width: 0;
+}
+
+.nashville {
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--surface) 86%, var(--highlight) 14%), var(--surface) 46%),
+    var(--surface);
+  overflow: hidden;
+}
+
+.nashville-key-row {
+  margin-top: 0.7rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(52px, 1fr));
+  gap: 0.35rem;
+}
+
+.nashville-key-chip {
+  border: 1px solid color-mix(in srgb, var(--border) 62%, var(--highlight) 38%);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--surface) 78%, var(--highlight) 22%), var(--surface-soft));
+  color: var(--ink);
+  padding: 0.3rem 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: inset 0 -2px 0 rgba(95, 68, 30, 0.08);
+}
+
+.nashville-key-chip.active {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
 }
 
 .compact-select select {
@@ -207,8 +246,9 @@ button:focus {
 
 .dashboard-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(360px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
   gap: 0.9rem;
+  align-items: start;
 }
 
 .nashville-table-wrap,
@@ -260,20 +300,23 @@ button:focus {
 .nashville-compact {
   margin-top: 0.75rem;
   display: grid;
-  grid-template-columns: repeat(4, minmax(82px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(74px, 1fr));
   gap: 0.55rem;
 }
 
 .nashville-degree-card {
+  min-width: 0;
   min-height: 82px;
-  border: 1px solid var(--border);
+  border: 1px solid color-mix(in srgb, var(--border) 62%, var(--highlight) 38%);
   border-radius: 8px;
-  background: var(--chip-bg);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--surface) 80%, var(--highlight) 20%), var(--surface-soft));
   color: var(--ink);
   display: grid;
   place-items: center;
   gap: 0.1rem;
   cursor: pointer;
+  box-shadow: inset 0 -3px 0 rgba(95, 68, 30, 0.08);
 }
 
 .nashville-degree-card span {
@@ -284,8 +327,10 @@ button:focus {
 
 .nashville-degree-card strong {
   color: var(--primary);
-  font-size: 1.18rem;
+  font-size: 1.08rem;
   line-height: 1;
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 
 .nashville-degree-card small {
@@ -296,12 +341,21 @@ button:focus {
 .nashville-degree-card.active {
   background: var(--primary);
   color: #fff;
+  border-color: var(--primary);
+  box-shadow:
+    inset 0 -3px 0 rgba(0, 0, 0, 0.16),
+    0 0 0 3px color-mix(in srgb, var(--primary) 18%, transparent 82%);
 }
 
 .nashville-degree-card.active span,
 .nashville-degree-card.active strong,
 .nashville-degree-card.active small {
   color: #fff;
+}
+
+.nashville-degree-card.secondary {
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--surface-soft) 88%, var(--accent) 12%), var(--surface));
 }
 
 .circle {
@@ -626,7 +680,7 @@ button:focus {
 }
 
 .fretboard {
-  grid-column: 1 / span 2;
+  grid-column: 1 / -1;
   --fretboard-board: color-mix(in srgb, var(--accent) 58%, #163a33 42%);
   --fretboard-board-dark: color-mix(in srgb, var(--accent) 34%, #0f2522 66%);
   --fretboard-paper: #fff8df;
@@ -1052,21 +1106,73 @@ button:focus {
   opacity: 0.34;
 }
 
+.translator {
+  grid-column: 1 / -1;
+}
+
 .translator-layout {
-  margin-top: 0.5rem;
+  margin-top: 0.75rem;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.8rem;
+  grid-template-columns: minmax(280px, 420px) minmax(0, 1fr);
+  gap: 1rem;
   align-items: start;
+}
+
+.translator-entry {
+  min-width: 0;
 }
 
 .progression-input {
   margin-top: 0.2rem;
 }
 
+.translator-table-wrap {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface-soft);
+}
+
+.translator-table-wrap table {
+  margin-top: 0;
+  table-layout: fixed;
+}
+
+.translator caption {
+  padding: 0.62rem 0.75rem;
+  text-align: left;
+  color: var(--primary);
+  font-size: 0.86rem;
+  font-weight: 800;
+  caption-side: top;
+  background: color-mix(in srgb, var(--surface-soft) 82%, var(--highlight) 18%);
+  border-bottom: 1px solid var(--border);
+}
+
+.translator-col-chord {
+  width: 28%;
+}
+
+.translator-col-shape {
+  width: 34%;
+}
+
+.translator-col-frets {
+  width: 38%;
+}
+
 .translator th,
 .translator td {
   font-size: 0.84rem;
+  vertical-align: middle;
+}
+
+.translator th {
+  background: color-mix(in srgb, var(--surface-soft) 74%, var(--highlight) 26%);
+  color: var(--primary);
+}
+
+.translator tbody tr:nth-child(even) {
+  background: color-mix(in srgb, var(--surface-soft) 74%, transparent 26%);
 }
 
 .translator .empty-row {
@@ -1074,33 +1180,26 @@ button:focus {
   text-align: center;
 }
 
-.translator .research-cell {
-  min-width: 220px;
+.translator-chord-name {
+  display: inline-block;
+  color: var(--primary);
+  font-size: 0.98rem;
+  min-width: 2.2rem;
 }
 
-.translator .research-shape {
-  display: block;
+.translator-frets {
   font-family: 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace;
-  color: var(--ink);
-}
-
-.translator .research-source {
-  display: block;
-  margin-top: 0.2rem;
   color: var(--ink-soft);
-  font-size: 0.74rem;
-}
-
-.translator .research-missing {
-  color: var(--muted);
-  font-size: 0.78rem;
+  white-space: nowrap;
 }
 
 .progression-panel {
   border: 1px solid var(--border);
   border-radius: 10px;
-  padding: 0.7rem;
-  background: var(--surface-soft);
+  padding: 0.85rem;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--surface-soft) 84%, var(--highlight) 16%), var(--surface-soft) 54%),
+    var(--surface-soft);
 }
 
 .progression-panel h3 {
@@ -1109,41 +1208,77 @@ button:focus {
   color: var(--primary);
 }
 
-.progression-row {
-  margin-top: 0.65rem;
-}
-
-.progression-row > span {
-  font-size: 0.8rem;
-  color: var(--ink-soft);
-}
-
-.progression-chords {
-  margin-top: 0.35rem;
+.progression-map {
+  margin-top: 0.7rem;
+  --progression-count: 1;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
-  gap: 0.35rem;
+  grid-template-columns: 112px repeat(var(--progression-count), minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(48px, auto));
+  gap: 0.4rem;
+  align-items: stretch;
 }
 
-.progression-card {
-  border: 1px solid var(--border);
-  background: var(--chip-bg);
-  color: var(--ink);
+.progression-pair {
+  display: contents;
+}
+
+.progression-row-label,
+.progression-chip {
+  display: grid;
+  place-items: center;
   border-radius: 8px;
-  padding: 0.42rem;
-  font-size: 0.82rem;
-  font-weight: 700;
+  line-height: 1.1;
 }
 
-.progression-shape-card {
-  display: grid;
-  gap: 0.22rem;
-  justify-items: center;
-}
-
-.progression-order {
-  font-size: 0.74rem;
+.progression-row-label {
+  place-items: center start;
   color: var(--ink-soft);
+  font-size: 0.78rem;
+  font-weight: 700;
+  min-height: 48px;
+}
+
+.progression-row-label-original {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.progression-row-label-shape {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.progression-empty {
+  grid-column: 2 / -1;
+  grid-row: 1 / span 2;
+  color: var(--muted);
+  font-size: 0.78rem;
+  border-radius: 8px;
+  min-height: 48px;
+  display: grid;
+  place-items: center start;
+  padding-inline: 0.45rem;
+}
+
+.progression-chip {
+  border: 1px solid var(--border);
+  min-height: 48px;
+  padding: 0.45rem 0.55rem;
+  text-align: center;
+  word-break: break-word;
+}
+
+.progression-chip.original {
+  background: var(--primary);
+  color: #fff;
+  font-size: 1rem;
+}
+
+.progression-chip.translated {
+  background: color-mix(in srgb, var(--accent) 18%, var(--surface) 82%);
+  color: var(--ink);
+  font-size: 0.86rem;
+  font-weight: 800;
 }
 
 .progression-note {
@@ -1246,16 +1381,33 @@ button:focus {
     grid-template-columns: repeat(3, minmax(150px, 1fr));
   }
 
-  .dashboard-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .fretboard {
-    grid-column: 1;
-  }
-
   .translator-layout {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .progression-map {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+  }
+
+  .progression-row-label {
+    min-height: auto;
+    place-items: start;
+  }
+
+  .progression-row-label-original,
+  .progression-row-label-shape,
+  .progression-empty,
+  .progression-chip.original,
+  .progression-chip.translated {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .progression-chip {
+    min-height: 42px;
   }
 }
 
@@ -1289,6 +1441,20 @@ button:focus {
 
   .nashville-compact {
     grid-template-columns: repeat(2, minmax(120px, 1fr));
+  }
+
+  .nashville-key-row {
+    grid-template-columns: repeat(4, minmax(56px, 1fr));
+  }
+
+  .translator th,
+  .translator td {
+    padding: 0.38rem;
+    font-size: 0.78rem;
+  }
+
+  .translator-chord-name {
+    font-size: 0.9rem;
   }
 
   .fretboard th,

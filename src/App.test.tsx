@@ -8,7 +8,8 @@ describe('App integration', () => {
     const user = userEvent.setup()
     render(<App />)
 
-    await user.selectOptions(screen.getByLabelText('Key'), 'G')
+    const controlsPanel = screen.getByRole('region', { name: 'Global controls' })
+    await user.selectOptions(within(controlsPanel).getByLabelText('Key'), 'G')
     expect(screen.getByText('Active Key')).toBeInTheDocument()
     expect(screen.getAllByText('G').length).toBeGreaterThan(0)
 
@@ -24,7 +25,8 @@ describe('App integration', () => {
     render(<App />)
 
     const nashvillePanel = screen.getByRole('region', { name: 'Nashville number system' })
-    await user.selectOptions(screen.getByLabelText('Key'), 'A')
+    const controlsPanel = screen.getByRole('region', { name: 'Global controls' })
+    await user.selectOptions(within(controlsPanel).getByLabelText('Key'), 'A')
     await user.selectOptions(within(nashvillePanel).getByLabelText('Mode'), 'minor')
 
     expect(within(nashvillePanel).getByRole('button', { name: /i Am 1/i })).toHaveClass('active')
@@ -33,13 +35,16 @@ describe('App integration', () => {
     expect(within(circlePanel).getByText(/^Am$/, { selector: 'strong' })).toBeInTheDocument()
   })
 
-  it('renders research-backed translator output and keeps fretboard capped at fret 15', async () => {
+  it('renders clean translator output and keeps fretboard capped at fret 15', async () => {
     const user = userEvent.setup()
     render(<App />)
 
-    expect(screen.getByRole('columnheader', { name: 'Research-backed Shape' })).toBeInTheDocument()
+    const translatorPanel = screen.getByRole('region', { name: 'Tuning translator' })
+    expect(within(translatorPanel).queryByRole('columnheader', { name: 'Research-backed Shape' })).not.toBeInTheDocument()
+    expect(within(translatorPanel).getByRole('columnheader', { name: 'Open Shape' })).toBeInTheDocument()
+    expect(within(translatorPanel).getByText('Progression Alignment')).toBeInTheDocument()
     expect(screen.getByText(/Research voicing:/i)).toBeInTheDocument()
-    expect(screen.getAllByText(/Source:/i).length).toBeGreaterThan(0)
+    expect(within(translatorPanel).queryByText(/Source:/i)).not.toBeInTheDocument()
 
     const targetTuningSelect = screen.getByLabelText('New Tuning')
     await user.selectOptions(targetTuningSelect, 'drop_d')
@@ -50,6 +55,16 @@ describe('App integration', () => {
     expect(within(fretboardPanel).getByRole('columnheader', { name: 'Nut' })).toBeInTheDocument()
     expect(within(fretboardPanel).getByRole('columnheader', { name: '15' })).toBeInTheDocument()
     expect(within(fretboardPanel).queryByRole('columnheader', { name: '16' })).not.toBeInTheDocument()
+  })
+
+  it('shows capo translations as open chord shape names', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    await user.selectOptions(screen.getByLabelText('New Tuning Capo'), '5')
+
+    const translatorPanel = screen.getByRole('region', { name: 'Tuning translator' })
+    expect(within(translatorPanel).getAllByText('G shape').length).toBeGreaterThan(0)
   })
 
   it('renders the fretboard with high E on top and low E on bottom', () => {
@@ -77,17 +92,15 @@ describe('App integration', () => {
     expect(within(fretboardPanel).getByRole('cell', { name: /A2 string fret 3: C.*selected chord shape fret/i })).toBeInTheDocument()
   })
 
-  it('keeps Nashville compact with common degrees and a dropdown for less common degrees', async () => {
-    const user = userEvent.setup()
+  it('shows all seven Nashville chord degrees as visible cards', () => {
     render(<App />)
 
     const nashvillePanel = screen.getByRole('region', { name: 'Nashville number system' })
     expect(within(nashvillePanel).getByRole('button', { name: /I C 1/i })).toBeInTheDocument()
     expect(within(nashvillePanel).getByRole('button', { name: /IV F 4/i })).toBeInTheDocument()
-    expect(within(nashvillePanel).queryByRole('button', { name: /ii Dm 2/i })).not.toBeInTheDocument()
-
-    await user.selectOptions(within(nashvillePanel).getByLabelText('More'), '2')
-    expect(within(nashvillePanel).getByLabelText('More')).toHaveValue('2')
+    expect(within(nashvillePanel).getByRole('button', { name: /ii Dm 2/i })).toBeInTheDocument()
+    expect(within(nashvillePanel).getByRole('button', { name: /iii Em 3/i })).toBeInTheDocument()
+    expect(within(nashvillePanel).getByRole('button', { name: /vii° Bdim 7/i })).toBeInTheDocument()
   })
 
   it('tags all seven active key degrees on the circle of fifths', () => {
@@ -97,5 +110,19 @@ describe('App integration', () => {
     for (const roman of ['I', 'ii', 'iii', 'IV', 'V', 'vi', 'vii°']) {
       expect(within(circlePanel).getAllByText(roman).length).toBeGreaterThan(0)
     }
+  })
+
+  it('lets Nashville panel pick common keys and syncs the app key', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    const nashvillePanel = screen.getByRole('region', { name: 'Nashville number system' })
+    const controlsPanel = screen.getByRole('region', { name: 'Global controls' })
+
+    await user.selectOptions(within(nashvillePanel).getByLabelText('Mode'), 'minor')
+    await user.click(within(nashvillePanel).getByRole('button', { name: 'Key Em' }))
+
+    expect(within(controlsPanel).getByLabelText('Key')).toHaveValue('E')
+    expect(within(nashvillePanel).getByRole('button', { name: /i Em 1/i })).toHaveClass('active')
   })
 })

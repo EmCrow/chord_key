@@ -41,6 +41,7 @@ export interface TranslatedShape {
   absoluteFrets: Array<number | 'x'>
   playable: boolean
   notes: string[]
+  openChordShape?: string
 }
 
 export interface TranslationResult {
