@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
 import App from './App'
@@ -13,11 +13,15 @@ describe('App integration', () => {
     expect(screen.getByText('Active Key')).toBeInTheDocument()
     expect(screen.getAllByText('G').length).toBeGreaterThan(0)
 
-    const capoSelect = screen.getByLabelText('New Tuning Capo')
+    const capoSelect = within(controlsPanel).getByLabelText('New Tuning Capo')
     await user.selectOptions(capoSelect, '2')
 
     expect(screen.getByText(/with capo at fret 2/i)).toBeInTheDocument()
     expect(screen.getByText(/capo at 2/i)).toBeInTheDocument()
+    expect(capoSelect).toHaveValue('2')
+
+    const fretboardPanel = screen.getByRole('region', { name: '15 fret fretboard' })
+    expect(within(fretboardPanel).getByRole('button', { name: /currently at fret 2/i })).toBeInTheDocument()
   })
 
   it('switches to minor harmony mode from the compact Nashville controls', async () => {
@@ -42,6 +46,11 @@ describe('App integration', () => {
     const translatorPanel = screen.getByRole('region', { name: 'Tuning translator' })
     expect(within(translatorPanel).queryByRole('columnheader', { name: 'Research-backed Shape' })).not.toBeInTheDocument()
     expect(within(translatorPanel).getByRole('columnheader', { name: 'Open Shape' })).toBeInTheDocument()
+    expect(within(translatorPanel).getByRole('columnheader', { name: 'Hear' })).toBeInTheDocument()
+    expect(within(translatorPanel).getAllByRole('button', { name: 'Original' }).length).toBeGreaterThan(0)
+    expect(within(translatorPanel).getAllByRole('button', { name: 'Shape' }).length).toBeGreaterThan(0)
+    expect(within(translatorPanel).getByRole('button', { name: 'Hear original progression' })).toBeInTheDocument()
+    expect(within(translatorPanel).getByRole('button', { name: 'Hear translated progression' })).toBeInTheDocument()
     expect(within(translatorPanel).getByText('Progression Alignment')).toBeInTheDocument()
     expect(screen.getByText(/Research voicing:/i)).toBeInTheDocument()
     expect(within(translatorPanel).queryByText(/Source:/i)).not.toBeInTheDocument()
@@ -52,19 +61,44 @@ describe('App integration', () => {
     expect(screen.getAllByText(/fallback tuning standard/i).length).toBeGreaterThan(0)
 
     const fretboardPanel = screen.getByRole('region', { name: '15 fret fretboard' })
+    expect(within(fretboardPanel).getByRole('button', { name: /drag nut marker to set capo/i })).toBeInTheDocument()
+    expect(within(fretboardPanel).getByLabelText('Scale playback')).toHaveValue('strings')
+    expect(within(fretboardPanel).getByRole('button', { name: 'Hear scale' })).toBeInTheDocument()
     expect(within(fretboardPanel).getByRole('columnheader', { name: 'Nut' })).toBeInTheDocument()
     expect(within(fretboardPanel).getByRole('columnheader', { name: '15' })).toBeInTheDocument()
     expect(within(fretboardPanel).queryByRole('columnheader', { name: '16' })).not.toBeInTheDocument()
   })
 
-  it('shows capo translations as open chord shape names', async () => {
-    const user = userEvent.setup()
+  it('shows capo translations as open chord shape names', () => {
     render(<App />)
 
-    await user.selectOptions(screen.getByLabelText('New Tuning Capo'), '5')
+    const controlsPanel = screen.getByRole('region', { name: 'Global controls' })
+    fireEvent.change(within(controlsPanel).getByLabelText('New Tuning Capo'), { target: { value: '5' } })
 
     const translatorPanel = screen.getByRole('region', { name: 'Tuning translator' })
     expect(within(translatorPanel).getAllByText('G shape').length).toBeGreaterThan(0)
+  })
+
+  it('moves the capo by dropping the nut marker on a fret header', () => {
+    render(<App />)
+
+    const controlsPanel = screen.getByRole('region', { name: 'Global controls' })
+    const fretboardPanel = screen.getByRole('region', { name: '15 fret fretboard' })
+    const nutHandle = within(fretboardPanel).getByRole('button', { name: /currently at the nut/i })
+    const fretFiveHeader = within(fretboardPanel).getByRole('columnheader', { name: '5' })
+    const dataTransfer = {
+      effectAllowed: 'move',
+      dropEffect: 'move',
+      setData: () => undefined,
+    }
+
+    fireEvent.dragStart(nutHandle, { dataTransfer })
+    fireEvent.dragOver(fretFiveHeader, { dataTransfer })
+    fireEvent.drop(fretFiveHeader, { dataTransfer })
+
+    expect(within(controlsPanel).getByLabelText('New Tuning Capo')).toHaveValue('5')
+    expect(within(fretboardPanel).getByRole('button', { name: /currently at fret 5/i })).toBeInTheDocument()
+    expect(screen.getByText(/with capo at fret 5/i)).toBeInTheDocument()
   })
 
   it('renders the fretboard with high E on top and low E on bottom', () => {
@@ -92,6 +126,16 @@ describe('App integration', () => {
     expect(within(fretboardPanel).getByRole('cell', { name: /A2 string fret 3: C.*selected chord shape fret/i })).toBeInTheDocument()
   })
 
+  it('marks the currently sounding fret while playing the scale', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    const fretboardPanel = screen.getByRole('region', { name: '15 fret fretboard' })
+    await user.click(within(fretboardPanel).getByRole('button', { name: 'Hear scale' }))
+
+    expect(await within(fretboardPanel).findByRole('cell', { name: /currently playing/i })).toBeInTheDocument()
+  })
+
   it('shows all seven Nashville chord degrees as visible cards', () => {
     render(<App />)
 
@@ -104,6 +148,9 @@ describe('App integration', () => {
     expect(within(nashvillePanel).getByText('Selected chord')).toBeInTheDocument()
     expect(within(nashvillePanel).getByText('Chord construction')).toBeInTheDocument()
     expect(within(nashvillePanel).getByText('Voice leading')).toBeInTheDocument()
+    expect(within(nashvillePanel).getByRole('button', { name: 'Hear chord' })).toBeInTheDocument()
+    expect(within(nashvillePanel).getByRole('button', { name: 'Hear movement' })).toBeInTheDocument()
+    expect(within(nashvillePanel).getByLabelText('Voicing')).toHaveValue('guitar')
   })
 
   it('tags all seven active key degrees on the circle of fifths', () => {

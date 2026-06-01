@@ -86,6 +86,7 @@ export function useWorkbenchDerivedData({
   return {
     nashvilleChords,
     scaleDef,
+    originalTuning,
     targetTuning,
     fretboardMap,
     translationResults,

@@ -4,6 +4,8 @@ import type { CagedShape, HarmonyMode } from '../domain/types'
 import { DEFAULT_STATE } from './defaults'
 
 type ThemeMode = 'light' | 'dark'
+const MIN_CAPO_FRET = 0
+const MAX_CAPO_FRET = 12
 
 export interface WorkbenchState {
   keyNote: string
@@ -74,6 +76,12 @@ export function useWorkbenchState(): { state: WorkbenchState; actions: Workbench
     setShowNoteNamesState(enabled)
   }
 
+  const handleTargetCapoChange = (capo: number) => {
+    const requestedCapo = Number.isFinite(capo) ? capo : MIN_CAPO_FRET
+    const nextCapo = Math.min(MAX_CAPO_FRET, Math.max(MIN_CAPO_FRET, Math.round(requestedCapo)))
+    setTuningTargetCapo(nextCapo)
+  }
+
   const toggleTheme = () => {
     setTheme((current) => (current === 'light' ? 'dark' : 'light'))
   }
@@ -98,7 +106,7 @@ export function useWorkbenchState(): { state: WorkbenchState; actions: Workbench
       setCagedShape,
       setTuningOriginalId,
       setTuningTargetId,
-      setTuningTargetCapo,
+      setTuningTargetCapo: handleTargetCapoChange,
       setProgressionInput,
       setShowNoteNames,
       setShowIntervals,

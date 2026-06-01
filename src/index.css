@@ -103,6 +103,50 @@ main.app-shell {
   cursor: pointer;
 }
 
+.audio-button {
+  border: 1px solid color-mix(in srgb, var(--border) 58%, var(--highlight) 42%);
+  border-radius: 999px;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--surface) 74%, var(--highlight) 26%), var(--surface-soft));
+  color: var(--primary);
+  padding: 0.44rem 0.72rem;
+  font-size: 0.78rem;
+  font-weight: 900;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: inset 0 -2px 0 rgba(95, 68, 30, 0.08);
+}
+
+.audio-button:hover:not(:disabled) {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+
+.audio-button:disabled {
+  color: var(--muted);
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+.compact-audio-button {
+  padding: 0.3rem 0.5rem;
+  font-size: 0.72rem;
+}
+
+.learning-audio-button {
+  float: right;
+  margin-left: 0.5rem;
+}
+
+.audio-button-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: center;
+  justify-content: center;
+}
+
 .panel {
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -124,6 +168,14 @@ main.app-shell {
   align-items: center;
 }
 
+.fretboard-audio-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  align-items: flex-end;
+  justify-content: flex-end;
+}
+
 .compact-select {
   width: min(180px, 100%);
   gap: 0.2rem;
@@ -134,7 +186,7 @@ main.app-shell {
   display: flex;
   justify-content: flex-end;
   gap: 0.45rem;
-  width: min(220px, 38%);
+  width: min(340px, 56%);
 }
 
 .nashville-selects .compact-select {
@@ -950,11 +1002,59 @@ button:focus {
     rgba(9, 30, 27, 0.68);
 }
 
+.fretboard thead th.capo-handle-col {
+  box-shadow:
+    inset 0 0 0 999px rgba(246, 199, 92, 0.08),
+    inset 0 2px 0 rgba(246, 199, 92, 0.24);
+}
+
 .nut-badge {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  padding: 0;
   display: inline-grid;
   justify-items: center;
   gap: 0.12rem;
   transform: translateY(1px);
+}
+
+.capo-drag-handle {
+  cursor: grab;
+  touch-action: none;
+}
+
+.capo-drag-handle:active {
+  cursor: grabbing;
+}
+
+.capo-drag-handle:focus-visible {
+  outline: 2px solid var(--highlight);
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+
+.capo-drag-handle.active-capo i {
+  border-color: rgba(255, 249, 219, 0.95);
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(61, 39, 13, 0.12) 0 3px,
+      rgba(61, 39, 13, 0.32) 3px 4px
+    ),
+    linear-gradient(#fff3a7, var(--highlight) 52%, #7d5014);
+  box-shadow:
+    inset 0 -2px 0 rgba(95, 68, 30, 0.2),
+    0 0 0 2px rgba(246, 199, 92, 0.24),
+    0 0 12px rgba(246, 199, 92, 0.42);
+}
+
+.fret-header-label {
+  color: var(--fretboard-paper);
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .nut-badge i {
@@ -1098,6 +1198,13 @@ button:focus {
     rgba(8, 25, 22, 0.18);
 }
 
+.fretboard td.scale-playback-cell {
+  background:
+    radial-gradient(circle at 50% 50%, rgba(214, 45, 45, 0.55) 0 38%, transparent 62%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.02)),
+    rgba(96, 18, 18, 0.24);
+}
+
 .fretboard td.chord-shape-cell::after {
   background: linear-gradient(#e8f0ff, var(--primary) 54%, #102743);
   box-shadow:
@@ -1197,6 +1304,21 @@ button:focus {
     0 3px 0 rgba(0, 0, 0, 0.28);
 }
 
+.note-dot.playing,
+.note-dot.scale.playing,
+.note-dot.root.playing,
+.note-dot.chord.playing {
+  background:
+    radial-gradient(circle at 35% 26%, #ffe2e2 0%, #d62d2d 58%, #7c1515 100%);
+  color: #fff;
+  border-color: #fff;
+  box-shadow:
+    0 0 0 4px rgba(214, 45, 45, 0.28),
+    0 0 16px rgba(214, 45, 45, 0.54),
+    inset 0 -3px 0 rgba(80, 8, 8, 0.2),
+    0 2px 0 rgba(0, 0, 0, 0.26);
+}
+
 .note-dot.chord-shape,
 .note-dot.chord.chord-shape,
 .note-dot.root.chord-shape {
@@ -1255,15 +1377,19 @@ button:focus {
 }
 
 .translator-col-chord {
-  width: 28%;
+  width: 24%;
 }
 
 .translator-col-shape {
-  width: 34%;
+  width: 30%;
 }
 
 .translator-col-frets {
-  width: 38%;
+  width: 32%;
+}
+
+.translator-col-audio {
+  width: 14%;
 }
 
 .translator th,
@@ -1312,6 +1438,13 @@ button:focus {
   margin: 0;
   font-size: 0.96rem;
   color: var(--primary);
+}
+
+.progression-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem;
 }
 
 .progression-map {
@@ -1372,6 +1505,16 @@ button:focus {
   padding: 0.45rem 0.55rem;
   text-align: center;
   word-break: break-word;
+}
+
+button.progression-chip {
+  cursor: pointer;
+  font-family: inherit;
+}
+
+button.progression-chip:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
 }
 
 .progression-chip.original {
@@ -1531,6 +1674,11 @@ button:focus {
   .panel-title-row {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .fretboard-audio-controls {
+    width: 100%;
+    justify-content: flex-start;
   }
 
   .compact-select {

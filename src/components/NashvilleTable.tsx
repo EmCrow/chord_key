@@ -1,6 +1,13 @@
+import { useState } from 'react'
+import {
+  type ChordVoicingMode,
+  getNashvilleChordMidiVoicing,
+  playMidiChord,
+  playMidiChordSequence,
+} from '../domain/audio/playback'
 import { getNashvilleChords } from '../domain/music/harmony'
 import { getChordFunctionInfo, getNashvilleLearningSummary } from '../domain/music/learning'
-import type { HarmonyMode } from '../domain/types'
+import type { HarmonyMode, NashvilleChord } from '../domain/types'
 
 interface NashvilleTableProps {
   keyNote: string
@@ -30,6 +37,14 @@ export function NashvilleTable({ keyNote, harmonyMode, activeDegree, onSelection
   const commonKeyNotes = harmonyMode === 'major' ? COMMON_MAJOR_KEYS : COMMON_MINOR_KEYS
   const learningSummary = getNashvilleLearningSummary(keyNote, harmonyMode, activeDegree)
   const activeChordNotes = learningSummary.construction.map((note) => note.noteName)
+  const [voicingMode, setVoicingMode] = useState<ChordVoicingMode>('guitar')
+  const playChord = (chord: NashvilleChord) => playMidiChord(getNashvilleChordMidiVoicing(chord, voicingMode))
+  const playVoiceLeading = () => {
+    playMidiChordSequence([
+      getNashvilleChordMidiVoicing(learningSummary.voiceLeading.sourceChord, voicingMode),
+      getNashvilleChordMidiVoicing(learningSummary.voiceLeading.targetChord, voicingMode),
+    ])
+  }
 
   return (
     <section className="panel nashville" aria-label="Nashville number system">
@@ -45,6 +60,16 @@ export function NashvilleTable({ keyNote, harmonyMode, activeDegree, onSelection
               >
                 <option value="major">Major</option>
                 <option value="minor">Minor</option>
+              </select>
+            </label>
+            <label className="compact-select">
+              Voicing
+              <select
+                value={voicingMode}
+                onChange={(event) => setVoicingMode(event.target.value as ChordVoicingMode)}
+              >
+                <option value="guitar">Guitar</option>
+                <option value="compact">Compact</option>
               </select>
             </label>
           </div>
@@ -80,7 +105,10 @@ export function NashvilleTable({ keyNote, harmonyMode, activeDegree, onSelection
             } ${COMMON_DEGREES.includes(chord.degree) ? 'common' : 'secondary'}`}
             key={chord.degree}
             aria-label={`${chord.roman} ${chord.chordName} ${chord.degree}`}
-            onClick={() => onSelectionChange(keyNote, chord.degree, harmonyMode)}
+            onClick={() => {
+              onSelectionChange(keyNote, chord.degree, harmonyMode)
+              playChord(chord)
+            }}
           >
             <span>{chord.roman}</span>
             <strong>{chord.chordName}</strong>
@@ -93,6 +121,13 @@ export function NashvilleTable({ keyNote, harmonyMode, activeDegree, onSelection
       <div className="nashville-learning" aria-label="Nashville learning details">
         <article className="nashville-learning-card nashville-explainer">
           <span className="learning-eyebrow">Selected chord</span>
+          <button
+            type="button"
+            className="audio-button compact-audio-button learning-audio-button"
+            onClick={() => playChord(learningSummary.activeChord)}
+          >
+            Hear chord
+          </button>
           <h3>
             {learningSummary.activeChord.roman} in {learningSummary.keyLabel}
           </h3>
@@ -131,6 +166,13 @@ export function NashvilleTable({ keyNote, harmonyMode, activeDegree, onSelection
 
         <article className="nashville-learning-card">
           <span className="learning-eyebrow">Voice leading</span>
+          <button
+            type="button"
+            className="audio-button compact-audio-button learning-audio-button"
+            onClick={playVoiceLeading}
+          >
+            Hear movement
+          </button>
           <h3>
             {learningSummary.voiceLeading.sourceChord.chordName} {'->'}{' '}
             {learningSummary.voiceLeading.targetChord.chordName}

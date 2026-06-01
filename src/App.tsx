@@ -10,6 +10,7 @@ function App() {
   const { state, actions } = useWorkbenchState()
   const {
     scaleDef,
+    originalTuning,
     targetTuning,
     fretboardMap,
     translationResults,
@@ -88,11 +89,14 @@ function App() {
           activeResearchSuggestion={activeChordResearchSuggestion}
           showNoteNames={state.showNoteNames}
           showIntervals={state.showIntervals}
+          onCapoChange={actions.setTuningTargetCapo}
         />
         <TuningTranslator
           progressionInput={state.progressionInput}
           onProgressionChange={actions.setProgressionInput}
           targetCapo={state.tuningTargetCapo}
+          originalTuning={originalTuning}
+          targetTuning={targetTuning}
           translationResults={translationResults}
         />
       </section>
