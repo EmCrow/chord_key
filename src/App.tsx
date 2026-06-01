@@ -13,7 +13,6 @@ function App() {
     targetTuning,
     fretboardMap,
     translationResults,
-    translationResearchSuggestions,
     activeChordResearchSuggestion,
   } = useWorkbenchDerivedData(state)
 
@@ -95,7 +94,6 @@ function App() {
           onProgressionChange={actions.setProgressionInput}
           targetCapo={state.tuningTargetCapo}
           translationResults={translationResults}
-          researchSuggestions={translationResearchSuggestions}
         />
       </section>
     </main>

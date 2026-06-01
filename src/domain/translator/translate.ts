@@ -315,16 +315,16 @@ function getStandardOpenShape({
     return null
   }
 
-  const openShapeName = getOpenShapeNameForCapo(chordName, capoFret)
+  const openShapeName = getOpenChordShapeNameForCapo(chordName, capoFret)
   const relativeFrets = openShapeName ? STANDARD_OPEN_SHAPES[openShapeName] : undefined
   if (!relativeFrets || !isPlayable(relativeFrets, maxFret, capoFret)) {
     return null
   }
 
-  return buildTranslatedShape(relativeFrets, tuningMidi, capoFret, maxFret, preferFlats)
+  return buildTranslatedShape(relativeFrets, tuningMidi, capoFret, maxFret, preferFlats, openShapeName ?? undefined)
 }
 
-function getOpenShapeNameForCapo(chordName: string, capoFret: number): string | null {
+export function getOpenChordShapeNameForCapo(chordName: string, capoFret: number): string | null {
   if (capoFret === 0) {
     return STANDARD_OPEN_SHAPES[chordName] ? chordName : null
   }
@@ -354,6 +354,7 @@ function buildTranslatedShape(
   capoFret: number,
   maxFret: number,
   preferFlats: boolean,
+  openChordShape?: string,
 ): TranslatedShape {
   const absoluteFrets = relativeFrets.map((fret) => (fret === 'x' ? 'x' : fret + capoFret))
   const notes = relativeFrets
@@ -372,6 +373,7 @@ function buildTranslatedShape(
     absoluteFrets,
     playable: isPlayable(relativeFrets, maxFret, capoFret),
     notes,
+    openChordShape,
   }
 }
 
@@ -404,6 +406,7 @@ function cloneTranslatedShape(shape: TranslatedShape): TranslatedShape {
     absoluteFrets: [...shape.absoluteFrets],
     playable: shape.playable,
     notes: [...shape.notes],
+    openChordShape: shape.openChordShape,
   }
 }
 

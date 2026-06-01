@@ -33,13 +33,16 @@ describe('App integration', () => {
     expect(within(circlePanel).getByText(/^Am$/, { selector: 'strong' })).toBeInTheDocument()
   })
 
-  it('renders research-backed translator output and keeps fretboard capped at fret 15', async () => {
+  it('renders clean translator output and keeps fretboard capped at fret 15', async () => {
     const user = userEvent.setup()
     render(<App />)
 
-    expect(screen.getByRole('columnheader', { name: 'Research-backed Shape' })).toBeInTheDocument()
+    const translatorPanel = screen.getByRole('region', { name: 'Tuning translator' })
+    expect(within(translatorPanel).queryByRole('columnheader', { name: 'Research-backed Shape' })).not.toBeInTheDocument()
+    expect(within(translatorPanel).getByRole('columnheader', { name: 'Open Shape' })).toBeInTheDocument()
+    expect(within(translatorPanel).getByText('Progression Alignment')).toBeInTheDocument()
     expect(screen.getByText(/Research voicing:/i)).toBeInTheDocument()
-    expect(screen.getAllByText(/Source:/i).length).toBeGreaterThan(0)
+    expect(within(translatorPanel).queryByText(/Source:/i)).not.toBeInTheDocument()
 
     const targetTuningSelect = screen.getByLabelText('New Tuning')
     await user.selectOptions(targetTuningSelect, 'drop_d')
@@ -50,6 +53,16 @@ describe('App integration', () => {
     expect(within(fretboardPanel).getByRole('columnheader', { name: 'Nut' })).toBeInTheDocument()
     expect(within(fretboardPanel).getByRole('columnheader', { name: '15' })).toBeInTheDocument()
     expect(within(fretboardPanel).queryByRole('columnheader', { name: '16' })).not.toBeInTheDocument()
+  })
+
+  it('shows capo translations as open chord shape names', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    await user.selectOptions(screen.getByLabelText('New Tuning Capo'), '5')
+
+    const translatorPanel = screen.getByRole('region', { name: 'Tuning translator' })
+    expect(within(translatorPanel).getAllByText('G shape').length).toBeGreaterThan(0)
   })
 
   it('renders the fretboard with high E on top and low E on bottom', () => {

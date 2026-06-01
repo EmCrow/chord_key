@@ -1,13 +1,20 @@
-import type { ResearchSuggestion, TranslationResult } from '../domain/types'
+import type { CSSProperties } from 'react'
+import type { TranslationResult, TranslatedShape } from '../domain/types'
 import { formatShape } from '../domain/translator/translate'
-import { ChordShapeChart } from './ChordShapeChart'
 
 interface TuningTranslatorProps {
   progressionInput: string
   onProgressionChange: (nextValue: string) => void
   targetCapo: number
   translationResults: TranslationResult[]
-  researchSuggestions: Array<ResearchSuggestion | null>
+}
+
+function getShapeLabel(shape: TranslatedShape | null): string {
+  if (!shape) {
+    return 'Unplayable'
+  }
+
+  return shape.openChordShape ? `${shape.openChordShape} shape` : 'Generated shape'
 }
 
 export function TuningTranslator({
@@ -15,20 +22,23 @@ export function TuningTranslator({
   onProgressionChange,
   targetCapo,
   translationResults,
-  researchSuggestions,
 }: TuningTranslatorProps) {
+  const progressionGridStyle = {
+    '--progression-count': Math.max(translationResults.length, 1),
+  } as CSSProperties & Record<string, number>
+
   return (
     <section className="panel translator" aria-label="Tuning translator">
       <header>
         <h2>Tuning Translator</h2>
         <p>
-          Enter chord letters like C G Am F. Original and translated chord shapes are shown side by side
+          Enter chord letters like C G Am F. Original chords and capo chord shapes stay aligned left to right
           {targetCapo > 0 ? ` with capo at fret ${targetCapo}.` : '.'}
         </p>
       </header>
 
       <div className="translator-layout">
-        <div>
+        <div className="translator-entry">
           <label className="progression-input">
             Chord Progression (Letters)
             <input
@@ -40,48 +50,38 @@ export function TuningTranslator({
 
           <div className="translator-table-wrap">
             <table>
+              <caption>Chord Shape Lookup</caption>
+              <colgroup>
+                <col className="translator-col-chord" />
+                <col className="translator-col-shape" />
+                <col className="translator-col-frets" />
+              </colgroup>
               <thead>
                 <tr>
-                  <th scope="col">Chord</th>
-                  <th scope="col">Original Chord Shape</th>
-                  <th scope="col">Translated Chord Shape</th>
-                  <th scope="col">Research-backed Shape</th>
+                  <th scope="col">Original Chord</th>
+                  <th scope="col">Open Shape</th>
+                  <th scope="col">Frets</th>
                 </tr>
               </thead>
               <tbody>
                 {translationResults.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="empty-row">
+                    <td colSpan={3} className="empty-row">
                       No valid letter chords found. Use tokens like C, G, Am, F, Dm7, or Bdim.
                     </td>
                   </tr>
                 ) : (
-                  translationResults.map((result, index) => {
-                    const suggestion = researchSuggestions[index]
-
-                    return (
-                      <tr key={`${result.originalChordName}-${index}`}>
-                        <td>{result.originalChordName}</td>
-                        <td>{result.originalShape ? formatShape(result.originalShape.relativeFrets) : 'n/a'}</td>
-                        <td>{result.translatedShape ? formatShape(result.translatedShape.relativeFrets) : 'unplayable'}</td>
-                        <td className="research-cell">
-                          {suggestion ? (
-                            <>
-                              <span className="research-shape">{formatShape(suggestion.relativeFrets)}</span>
-                              <small className="research-source">
-                                Source: {suggestion.sourceName}
-                                {suggestion.fallbackTuningId
-                                  ? ` (fallback tuning ${suggestion.fallbackTuningId})`
-                                  : ''}
-                              </small>
-                            </>
-                          ) : (
-                            <span className="research-missing">No verified offline shape</span>
-                          )}
-                        </td>
-                      </tr>
-                    )
-                  })
+                  translationResults.map((result, index) => (
+                    <tr key={`${result.originalChordName}-${index}`}>
+                      <td>
+                        <strong className="translator-chord-name">{result.originalChordName}</strong>
+                      </td>
+                      <td>{getShapeLabel(result.translatedShape)}</td>
+                      <td className="translator-frets">
+                        {result.translatedShape ? formatShape(result.translatedShape.relativeFrets) : 'n/a'}
+                      </td>
+                    </tr>
+                  ))
                 )}
               </tbody>
             </table>
@@ -89,37 +89,27 @@ export function TuningTranslator({
         </div>
 
         <aside className="progression-panel" aria-label="Chord progression before and after">
-          <h3>Progression Before / After Shapes</h3>
-          <div className="progression-row">
-            <span>Before</span>
-            <div className="progression-chords">
-              {translationResults.length === 0 ? (
-                <small>Waiting for valid chords...</small>
-              ) : (
-                translationResults.map((result, index) => (
-                  <div className="progression-card progression-shape-card" key={`before-${result.originalChordName}-${index}`}>
-                    <span className="progression-order">#{index + 1}</span>
-                    <ChordShapeChart shape={result.originalShape} ariaLabel={`Before shape ${index + 1}`} />
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
+          <h3>Progression Alignment</h3>
+          <div className="progression-map progression-alignment-grid" style={progressionGridStyle}>
+            <span className="progression-row-label progression-row-label-original">Original Chord</span>
+            <span className="progression-row-label progression-row-label-shape">Open Shape</span>
 
-          <div className="progression-row">
-            <span>After</span>
-            <div className="progression-chords">
-              {translationResults.length === 0 ? (
-                <small>Waiting for valid chords...</small>
-              ) : (
-                translationResults.map((result, index) => (
-                  <div className="progression-card progression-shape-card" key={`after-${result.originalChordName}-${index}`}>
-                    <span className="progression-order">#{index + 1}</span>
-                    <ChordShapeChart shape={result.translatedShape} ariaLabel={`After shape ${index + 1}`} />
-                  </div>
-                ))
-              )}
-            </div>
+            {translationResults.length === 0 ? (
+              <small className="progression-empty progression-empty-both">Waiting for valid chords...</small>
+            ) : (
+              translationResults.map((result, index) => {
+                const gridColumn = index + 2
+                return (
+                <span className="progression-pair" key={`pair-${result.originalChordName}-${index}`}>
+                  <strong className="progression-chip original" style={{ gridColumn, gridRow: 1 }}>
+                    {result.originalChordName}
+                  </strong>
+                  <span className="progression-chip translated" style={{ gridColumn, gridRow: 2 }}>
+                    {getShapeLabel(result.translatedShape)}
+                  </span>
+                </span>
+              )})
+            )}
           </div>
         </aside>
       </div>
