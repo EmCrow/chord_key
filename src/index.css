@@ -333,6 +333,17 @@ button:focus {
   overflow-wrap: anywhere;
 }
 
+.nashville-degree-card em {
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 16%, var(--surface) 84%);
+  color: var(--accent);
+  padding: 0.12rem 0.35rem;
+  font-size: 0.62rem;
+  font-style: normal;
+  font-weight: 900;
+  line-height: 1;
+}
+
 .nashville-degree-card small {
   color: var(--ink-soft);
   font-size: 0.74rem;
@@ -349,13 +360,108 @@ button:focus {
 
 .nashville-degree-card.active span,
 .nashville-degree-card.active strong,
+.nashville-degree-card.active em,
 .nashville-degree-card.active small {
   color: #fff;
+}
+
+.nashville-degree-card.active em {
+  background: rgba(255, 255, 255, 0.18);
 }
 
 .nashville-degree-card.secondary {
   background:
     linear-gradient(135deg, color-mix(in srgb, var(--surface-soft) 88%, var(--accent) 12%), var(--surface));
+}
+
+.nashville-learning {
+  margin-top: 0.8rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 0.6rem;
+}
+
+.nashville-learning-card {
+  min-width: 0;
+  border: 1px solid color-mix(in srgb, var(--border) 70%, var(--highlight) 30%);
+  border-radius: 8px;
+  padding: 0.7rem;
+  background:
+    linear-gradient(90deg, rgba(198, 144, 38, 0.14) 0 4px, transparent 4px),
+    color-mix(in srgb, var(--surface-soft) 80%, var(--surface) 20%);
+}
+
+.learning-eyebrow {
+  display: block;
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.nashville-learning-card h3 {
+  margin: 0.25rem 0 0;
+  color: var(--primary);
+  font-size: 1rem;
+}
+
+.nashville-learning-card p {
+  margin: 0.45rem 0 0;
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+}
+
+.nashville-learning-card dl {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0.55rem 0 0;
+}
+
+.nashville-learning-card dl div {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 0.5rem;
+}
+
+.nashville-learning-card dt {
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.nashville-learning-card dd {
+  margin: 0;
+  color: var(--ink);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.scale-note-row,
+.voice-leading-row {
+  margin-top: 0.55rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.32rem;
+}
+
+.scale-note-row span,
+.voice-leading-row span {
+  border: 1px solid color-mix(in srgb, var(--border) 66%, var(--highlight) 34%);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  padding: 0.22rem 0.45rem;
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.scale-note-row small,
+.voice-leading-row small {
+  color: var(--muted);
+  font-size: 0.66rem;
+  font-weight: 900;
 }
 
 .circle {
