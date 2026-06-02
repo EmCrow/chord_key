@@ -311,11 +311,16 @@ function getStandardOpenShape({
   maxFret: number
   preferFlats: boolean
 }): TranslatedShape | null {
-  if (!isStandardTuning(tuningMidi) || chordName.includes('/')) {
+  if (chordName.includes('/')) {
     return null
   }
 
-  const openShapeName = getOpenChordShapeNameForCapo(chordName, capoFret)
+  const standardOffset = getUniformStandardTuningOffset(tuningMidi)
+  if (standardOffset === null) {
+    return null
+  }
+
+  const openShapeName = getOpenChordShapeNameForTuningOffset(chordName, capoFret, standardOffset)
   const relativeFrets = openShapeName ? STANDARD_OPEN_SHAPES[openShapeName] : undefined
   if (!relativeFrets || !isPlayable(relativeFrets, maxFret, capoFret)) {
     return null
@@ -325,8 +330,24 @@ function getStandardOpenShape({
 }
 
 export function getOpenChordShapeNameForCapo(chordName: string, capoFret: number): string | null {
+  return getOpenChordShapeNameForTuningOffset(chordName, capoFret, 0)
+}
+
+function getOpenChordShapeNameForTuningOffset(chordName: string, capoFret: number, tuningOffset: number): string | null {
   if (capoFret === 0) {
-    return STANDARD_OPEN_SHAPES[chordName] ? chordName : null
+    const match = chordName.match(/^([A-G](?:#|b)?)(.*)$/)
+    if (!match) {
+      return STANDARD_OPEN_SHAPES[chordName] ? chordName : null
+    }
+
+    const [, root, suffix] = match
+    const shapeRootPc = normalizePitchClass(parseNoteName(root) - tuningOffset)
+    const candidates = [
+      `${pitchClassToNote(shapeRootPc, false)}${suffix}`,
+      `${pitchClassToNote(shapeRootPc, true)}${suffix}`,
+    ]
+
+    return candidates.find((candidate) => STANDARD_OPEN_SHAPES[candidate]) ?? null
   }
 
   const match = chordName.match(/^([A-G](?:#|b)?)(.*)$/)
@@ -335,7 +356,7 @@ export function getOpenChordShapeNameForCapo(chordName: string, capoFret: number
   }
 
   const [, root, suffix] = match
-  const shapeRootPc = normalizePitchClass(parseNoteName(root) - capoFret)
+  const shapeRootPc = normalizePitchClass(parseNoteName(root) - capoFret - tuningOffset)
   const candidates = [
     `${pitchClassToNote(shapeRootPc, false)}${suffix}`,
     `${pitchClassToNote(shapeRootPc, true)}${suffix}`,
@@ -344,8 +365,13 @@ export function getOpenChordShapeNameForCapo(chordName: string, capoFret: number
   return candidates.find((candidate) => STANDARD_OPEN_SHAPES[candidate]) ?? null
 }
 
-function isStandardTuning(tuningMidi: number[]): boolean {
-  return tuningMidi.length === STANDARD_TUNING_MIDI.length && tuningMidi.every((midi, index) => midi === STANDARD_TUNING_MIDI[index])
+function getUniformStandardTuningOffset(tuningMidi: number[]): number | null {
+  if (tuningMidi.length !== STANDARD_TUNING_MIDI.length) {
+    return null
+  }
+
+  const offset = tuningMidi[0] - STANDARD_TUNING_MIDI[0]
+  return tuningMidi.every((midi, index) => midi - STANDARD_TUNING_MIDI[index] === offset) ? offset : null
 }
 
 function buildTranslatedShape(

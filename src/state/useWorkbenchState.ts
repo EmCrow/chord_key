@@ -74,6 +74,9 @@ export function useWorkbenchState(): { state: WorkbenchState; actions: Workbench
 
   const setShowNoteNames = (enabled: boolean) => {
     setShowNoteNamesState(enabled)
+    if (enabled) {
+      setShowIntervalsState(false)
+    }
   }
 
   const handleTargetCapoChange = (capo: number) => {

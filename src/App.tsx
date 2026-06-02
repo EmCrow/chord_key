@@ -57,7 +57,6 @@ function App() {
             type="checkbox"
             checked={state.showNoteNames}
             onChange={(event) => actions.setShowNoteNames(event.target.checked)}
-            disabled={state.showIntervals}
           />
           Note names
         </label>

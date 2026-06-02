@@ -97,6 +97,23 @@ describe('translator capo behavior', () => {
     expect(results[0].translatedShape?.relativeFrets).toEqual([3, 2, 0, 0, 0, 3])
   })
 
+  it('uses shifted open shapes for uniform down-tunings', () => {
+    const standard = getTuningById('standard')
+    const wholeStepDown = getTuningById('whole_step_down')
+    const results = translateProgressionShapes({
+      progression: 'C',
+      key: 'C',
+      fromTuning: standard,
+      toTuning: wholeStepDown,
+      capoFret: 0,
+      maxFret: 15,
+    })
+
+    expect(results[0].translatedShape?.openChordShape).toBe('D')
+    expect(results[0].translatedShape?.relativeFrets).toEqual(['x', 'x', 0, 2, 3, 2])
+    expect(results[0].translatedShape?.notes).toEqual(['C', 'G', 'C', 'E'])
+  })
+
   it('ignores invalid progression tokens without throwing', () => {
     const standard = getTuningById('standard')
     const results = translateProgressionShapes({

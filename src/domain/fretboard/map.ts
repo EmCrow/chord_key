@@ -42,6 +42,7 @@ export function getFretboardMap({
         stringIndex,
         fret,
         absoluteFret: fret,
+        midi: soundingMidi,
         pitchClass,
         noteName: midiToNoteName(soundingMidi, preferFlats),
         isScaleTone,

@@ -16,6 +16,7 @@ export interface FretPosition {
   stringIndex: number
   fret: number
   absoluteFret: number
+  midi: number
   pitchClass: number
   noteName: string
   isScaleTone: boolean

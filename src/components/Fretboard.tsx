@@ -11,6 +11,7 @@ import {
 import {
   type ScalePlaybackOptions,
   getFretboardScalePlaybackSequence,
+  playMidiChord,
   playMidiSequence,
 } from '../domain/audio/playback'
 import type { FretPosition, ResearchSuggestion, TuningDef } from '../domain/types'
@@ -118,6 +119,9 @@ export function Fretboard({
       setActiveScalePlaybackKey(null)
     }, scalePlaybackSequence.length * SCALE_STEP_DURATION * 1000 + 140)
     playbackTimers.current.push(clearTimer)
+  }
+  const playFretboardNote = (midi: number) => {
+    playMidiChord([midi], { duration: 0.75, volume: 0.34 })
   }
   const moveCapo = (nextFret: number) => {
     onCapoChange(Math.min(MAX_CAPO_FRET, maxFret, Math.max(0, nextFret)))
@@ -343,7 +347,14 @@ export function Fretboard({
                           isActiveShapeFret ? ', selected chord shape fret' : ''
                         }`}
                       >
-                        <span className={`${noteClasses}${dimmed ? ' muted' : ''}`}>{label}</span>
+                        <button
+                          type="button"
+                          className={`${noteClasses}${dimmed ? ' muted' : ''}`}
+                          aria-label={`Hear ${position.noteName} on ${stringNote} string fret ${fret}`}
+                          onClick={() => playFretboardNote(position.midi)}
+                        >
+                          {label}
+                        </button>
                       </td>
                     )
                   })}

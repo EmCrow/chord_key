@@ -73,19 +73,35 @@ function scheduleMidiNote(
   duration: number,
   volume: number,
 ): void {
-  const oscillator = audioContext.createOscillator()
+  const fundamental = audioContext.createOscillator()
+  const brightness = audioContext.createOscillator()
+  const body = audioContext.createBiquadFilter()
   const gain = audioContext.createGain()
+  const frequency = midiToFrequency(midi)
 
-  oscillator.type = 'triangle'
-  oscillator.frequency.setValueAtTime(midiToFrequency(midi), startTime)
+  fundamental.type = 'triangle'
+  fundamental.frequency.setValueAtTime(frequency, startTime)
+  brightness.type = 'sawtooth'
+  brightness.frequency.setValueAtTime(frequency * 2.01, startTime)
+
+  body.type = 'lowpass'
+  body.frequency.setValueAtTime(2600, startTime)
+  body.frequency.exponentialRampToValueAtTime(760, startTime + Math.min(duration, 0.42))
+  body.Q.setValueAtTime(0.9, startTime)
+
   gain.gain.setValueAtTime(0.0001, startTime)
-  gain.gain.exponentialRampToValueAtTime(volume, startTime + 0.025)
+  gain.gain.exponentialRampToValueAtTime(volume, startTime + 0.008)
+  gain.gain.exponentialRampToValueAtTime(volume * 0.34, startTime + Math.min(duration * 0.42, 0.32))
   gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration)
 
-  oscillator.connect(gain)
+  fundamental.connect(body)
+  brightness.connect(body)
+  body.connect(gain)
   gain.connect(audioContext.destination)
-  oscillator.start(startTime)
-  oscillator.stop(startTime + duration + 0.04)
+  fundamental.start(startTime)
+  brightness.start(startTime)
+  fundamental.stop(startTime + duration + 0.04)
+  brightness.stop(startTime + duration + 0.04)
 }
 
 function scheduleMidiChord(
@@ -98,7 +114,7 @@ function scheduleMidiChord(
   const uniqueNotes = [...new Set(midiNotes)].sort((a, b) => a - b)
   const noteVolume = volume / Math.max(uniqueNotes.length, 1)
 
-  uniqueNotes.forEach((midi) => scheduleMidiNote(audioContext, midi, startTime, duration, noteVolume))
+  uniqueNotes.forEach((midi, index) => scheduleMidiNote(audioContext, midi, startTime + index * 0.018, duration, noteVolume))
 }
 
 export function playMidiChord(midiNotes: number[], options: PlaybackOptions = {}): void {

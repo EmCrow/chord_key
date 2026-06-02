@@ -2,6 +2,7 @@ import type { CSSProperties } from 'react'
 import { getShapeMidiNotes, playMidiChord, playMidiChordSequence } from '../domain/audio/playback'
 import type { TranslationResult, TranslatedShape, TuningDef } from '../domain/types'
 import { formatShape } from '../domain/translator/translate'
+import { ChordShapeChart } from './ChordShapeChart'
 
 interface TuningTranslatorProps {
   progressionInput: string
@@ -17,7 +18,7 @@ function getShapeLabel(shape: TranslatedShape | null): string {
     return 'Unplayable'
   }
 
-  return shape.openChordShape ? `${shape.openChordShape} shape` : 'Generated shape'
+  return shape.openChordShape ? `${shape.openChordShape} shape` : 'Custom voicing'
 }
 
 export function TuningTranslator({
@@ -182,7 +183,14 @@ export function TuningTranslator({
                       disabled={!result.translatedShape}
                       onClick={() => playShape(result.translatedShape, targetTuning)}
                     >
-                      {getShapeLabel(result.translatedShape)}
+                      {result.translatedShape?.openChordShape || !result.translatedShape ? (
+                        getShapeLabel(result.translatedShape)
+                      ) : (
+                        <ChordShapeChart
+                          shape={result.translatedShape}
+                          ariaLabel={`${result.originalChordName} translated chord chart`}
+                        />
+                      )}
                     </button>
                   </span>
                 )

@@ -39,6 +39,22 @@ describe('App integration', () => {
     expect(within(circlePanel).getByText(/^Am$/, { selector: 'strong' })).toBeInTheDocument()
   })
 
+  it('lets note names replace intervals without manually unchecking intervals first', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    const labelPanel = screen.getByRole('region', { name: 'Fretboard labels' })
+    const intervals = within(labelPanel).getByLabelText('Intervals')
+    const noteNames = within(labelPanel).getByLabelText('Note names')
+
+    await user.click(intervals)
+    expect(intervals).toBeChecked()
+
+    await user.click(noteNames)
+    expect(noteNames).toBeChecked()
+    expect(intervals).not.toBeChecked()
+  })
+
   it('renders clean translator output and keeps fretboard capped at fret 15', async () => {
     const user = userEvent.setup()
     render(<App />)
@@ -62,6 +78,7 @@ describe('App integration', () => {
 
     const fretboardPanel = screen.getByRole('region', { name: '15 fret fretboard' })
     expect(within(fretboardPanel).getByRole('button', { name: /drag nut marker to set capo/i })).toBeInTheDocument()
+    expect(within(fretboardPanel).getByRole('button', { name: /hear c on a2 string fret 3/i })).toBeInTheDocument()
     expect(within(fretboardPanel).getByLabelText('Scale playback')).toHaveValue('strings')
     expect(within(fretboardPanel).getByRole('button', { name: 'Hear scale' })).toBeInTheDocument()
     expect(within(fretboardPanel).getByRole('columnheader', { name: 'Nut' })).toBeInTheDocument()
@@ -77,6 +94,16 @@ describe('App integration', () => {
 
     const translatorPanel = screen.getByRole('region', { name: 'Tuning translator' })
     expect(within(translatorPanel).getAllByText('G shape').length).toBeGreaterThan(0)
+  })
+
+  it('uses shifted shapes when translating standard tuning to whole step down', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    await user.selectOptions(screen.getByLabelText('New Tuning'), 'whole_step_down')
+
+    const translatorPanel = screen.getByRole('region', { name: 'Tuning translator' })
+    expect(within(translatorPanel).getAllByText('D shape').length).toBeGreaterThan(0)
   })
 
   it('moves the capo by dropping the nut marker on a fret header', () => {
@@ -151,6 +178,35 @@ describe('App integration', () => {
     expect(within(nashvillePanel).getByRole('button', { name: 'Hear chord' })).toBeInTheDocument()
     expect(within(nashvillePanel).getByRole('button', { name: 'Hear movement' })).toBeInTheDocument()
     expect(within(nashvillePanel).getByLabelText('Voicing')).toHaveValue('guitar')
+    expect(within(nashvillePanel).getByLabelText('Custom Nashville progression')).toBeInTheDocument()
+  })
+
+  it('builds a custom Nashville progression by dragging chord cards', () => {
+    render(<App />)
+
+    const nashvillePanel = screen.getByRole('region', { name: 'Nashville number system' })
+    const oneChord = within(nashvillePanel).getByRole('button', { name: /I C 1/i })
+    const fiveChord = within(nashvillePanel).getByRole('button', { name: /V G 5/i })
+    const progression = within(nashvillePanel).getByLabelText('Custom Nashville progression')
+    let draggedDegree = ''
+    const dataTransfer = {
+      effectAllowed: 'copy',
+      dropEffect: 'copy',
+      setData: (_type: string, value: string) => {
+        draggedDegree = value
+      },
+      getData: () => draggedDegree,
+    }
+
+    fireEvent.dragStart(oneChord, { dataTransfer })
+    fireEvent.dragOver(progression, { dataTransfer })
+    fireEvent.drop(progression, { dataTransfer })
+    fireEvent.dragStart(fiveChord, { dataTransfer })
+    fireEvent.drop(progression, { dataTransfer })
+
+    expect(within(progression).getByRole('button', { name: 'Hear progression chord 1: C' })).toBeInTheDocument()
+    expect(within(progression).getByRole('button', { name: 'Hear progression chord 2: G' })).toBeInTheDocument()
+    expect(within(nashvillePanel).getByRole('button', { name: 'Loop' })).toBeEnabled()
   })
 
   it('tags all seven active key degrees on the circle of fifths', () => {

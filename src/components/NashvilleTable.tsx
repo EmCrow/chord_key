@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState, type DragEvent } from 'react'
 import {
   type ChordVoicingMode,
   getNashvilleChordMidiVoicing,
@@ -38,13 +38,80 @@ export function NashvilleTable({ keyNote, harmonyMode, activeDegree, onSelection
   const learningSummary = getNashvilleLearningSummary(keyNote, harmonyMode, activeDegree)
   const activeChordNotes = learningSummary.construction.map((note) => note.noteName)
   const [voicingMode, setVoicingMode] = useState<ChordVoicingMode>('guitar')
+  const [customProgressionDegrees, setCustomProgressionDegrees] = useState<number[]>([])
+  const [isLoopingProgression, setIsLoopingProgression] = useState(false)
+  const loopTimer = useRef<number | null>(null)
+  const customProgressionChords = customProgressionDegrees
+    .map((degree) => selectedChords.find((chord) => chord.degree === degree))
+    .filter((chord): chord is NashvilleChord => Boolean(chord))
   const playChord = (chord: NashvilleChord) => playMidiChord(getNashvilleChordMidiVoicing(chord, voicingMode))
+  const playProgression = () => {
+    if (customProgressionChords.length === 0) {
+      return
+    }
+
+    playMidiChordSequence(customProgressionChords.map((chord) => getNashvilleChordMidiVoicing(chord, voicingMode)))
+  }
   const playVoiceLeading = () => {
     playMidiChordSequence([
       getNashvilleChordMidiVoicing(learningSummary.voiceLeading.sourceChord, voicingMode),
       getNashvilleChordMidiVoicing(learningSummary.voiceLeading.targetChord, voicingMode),
     ])
   }
+  const stopLoop = () => {
+    if (loopTimer.current !== null) {
+      window.clearInterval(loopTimer.current)
+      loopTimer.current = null
+    }
+    setIsLoopingProgression(false)
+  }
+  const toggleProgressionLoop = () => {
+    if (customProgressionChords.length === 0) {
+      return
+    }
+
+    if (isLoopingProgression) {
+      stopLoop()
+      return
+    }
+
+    playProgression()
+    setIsLoopingProgression(true)
+    const loopDuration = Math.max(customProgressionChords.length * 820 + 180, 1000)
+    loopTimer.current = window.setInterval(playProgression, loopDuration)
+  }
+  const addProgressionDegree = (degree: number) => {
+    stopLoop()
+    setCustomProgressionDegrees((current) => [...current, degree])
+  }
+  const clearProgression = () => {
+    stopLoop()
+    setCustomProgressionDegrees([])
+  }
+  const handleChordDragStart = (event: DragEvent<HTMLButtonElement>, degree: number) => {
+    event.dataTransfer.effectAllowed = 'copy'
+    event.dataTransfer.setData('text/plain', String(degree))
+  }
+  const handleProgressionDragOver = (event: DragEvent<HTMLDivElement>) => {
+    event.preventDefault()
+    event.dataTransfer.dropEffect = 'copy'
+  }
+  const handleProgressionDrop = (event: DragEvent<HTMLDivElement>) => {
+    event.preventDefault()
+    const degree = Number(event.dataTransfer.getData('text/plain'))
+    if (Number.isInteger(degree) && selectedChords.some((chord) => chord.degree === degree)) {
+      addProgressionDegree(degree)
+    }
+  }
+
+  useEffect(
+    () => () => {
+      if (loopTimer.current !== null) {
+        window.clearInterval(loopTimer.current)
+      }
+    },
+    [],
+  )
 
   return (
     <section className="panel nashville" aria-label="Nashville number system">
@@ -105,6 +172,8 @@ export function NashvilleTable({ keyNote, harmonyMode, activeDegree, onSelection
             } ${COMMON_DEGREES.includes(chord.degree) ? 'common' : 'secondary'}`}
             key={chord.degree}
             aria-label={`${chord.roman} ${chord.chordName} ${chord.degree}`}
+            draggable
+            onDragStart={(event) => handleChordDragStart(event, chord.degree)}
             onClick={() => {
               onSelectionChange(keyNote, chord.degree, harmonyMode)
               playChord(chord)
@@ -191,6 +260,60 @@ export function NashvilleTable({ keyNote, harmonyMode, activeDegree, onSelection
                 {move.fromNote} {'->'} {move.toNote} <small>{move.direction} {move.semitones}</small>
               </span>
             ))}
+          </div>
+        </article>
+
+        <article className="nashville-learning-card progression-builder-card">
+          <span className="learning-eyebrow">Progression builder</span>
+          <div
+            className={`progression-drop-zone ${customProgressionChords.length === 0 ? 'empty' : ''}`}
+            role="list"
+            aria-label="Custom Nashville progression"
+            onDragOver={handleProgressionDragOver}
+            onDrop={handleProgressionDrop}
+          >
+            {customProgressionChords.length === 0 ? (
+              <span>Drag chords here</span>
+            ) : (
+              customProgressionChords.map((chord, index) => (
+                <button
+                  type="button"
+                  className="progression-builder-chip"
+                  key={`${chord.degree}-${index}`}
+                  aria-label={`Hear progression chord ${index + 1}: ${chord.chordName}`}
+                  onClick={() => playChord(chord)}
+                >
+                  <small>{chord.roman}</small>
+                  {chord.chordName}
+                </button>
+              ))
+            )}
+          </div>
+          <div className="progression-builder-actions">
+            <button
+              type="button"
+              className="audio-button compact-audio-button"
+              disabled={customProgressionChords.length === 0}
+              onClick={playProgression}
+            >
+              Hear progression
+            </button>
+            <button
+              type="button"
+              className="audio-button compact-audio-button"
+              disabled={customProgressionChords.length === 0}
+              onClick={toggleProgressionLoop}
+            >
+              {isLoopingProgression ? 'Stop loop' : 'Loop'}
+            </button>
+            <button
+              type="button"
+              className="audio-button compact-audio-button"
+              disabled={customProgressionChords.length === 0}
+              onClick={clearProgression}
+            >
+              Clear
+            </button>
           </div>
         </article>
       </div>
